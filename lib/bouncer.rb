@@ -32,6 +32,6 @@ Dir["#{app_dir}/**/*.rb"].reject { |f| f.include?('/faces/') || f.include?('/tes
   require file
 end
 
-module Dirt
-  PROJECT_ROOT = Pathname.new(File.dirname(__FILE__) + '/..').realpath
-end
+# module Dirt
+#   PROJECT_ROOT = Pathname.new(File.dirname(__FILE__) + '/..').realpath
+# end
