@@ -19,3 +19,5 @@ tmp/*
 
 core/config.yml
 persist/database.yml
+
+Gemfile.lock
