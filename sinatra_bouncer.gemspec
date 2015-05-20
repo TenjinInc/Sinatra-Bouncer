@@ -21,9 +21,9 @@ Gem::Specification.new do |s|
   # Development-only dependencies
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'rspec', '~> 2.14.1'
-  s.add_development_dependency 'cucumber'
-  # s.add_development_dependency 'capybara'
-  # s.add_development_dependency 'launchy'
+  s.add_development_dependency 'cucumber', '~> 1.3.19'
+  s.add_development_dependency 'capybara'
+  s.add_development_dependency 'launchy'
   # s.add_development_dependency 'factory_girl', '~> 4.0'
   s.add_development_dependency 'parallel_tests'
 end
