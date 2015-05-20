@@ -1,5 +1,5 @@
-#Bouncer
-Simple authorization permissions plug for Sinatra. 
+#Sinatra::Bouncer
+Simple authorization permissions extension for Sinatra. 
 
 ## Prerequisites
 Bouncer requires [Sinatra](http://www.sinatrarb.com/), and [ruby 1.9.3](https://www.ruby-lang.org/en/documentation/installation/).  
@@ -8,15 +8,15 @@ Bouncer requires [Sinatra](http://www.sinatrarb.com/), and [ruby 1.9.3](https://
 
 ###Gemfile
 ```
-gem 'bouncer'
+gem 'sinatra-bouncer'
 ```
 
 ### Command Line
 ```
-gem install bouncer
+gem install sinatra-bouncer
 ```
 
 ##Usage
 ```
-include Bouncer
+require 'sinatra/bouncer'
 ```
