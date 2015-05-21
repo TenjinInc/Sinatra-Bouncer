@@ -13,7 +13,7 @@ gem 'sinatra-bouncer'
 ```
 
 **Command Line**
-```bash
+```sh
 gem install sinatra-bouncer
 ```
 
@@ -44,15 +44,20 @@ end
 
 Bouncer is stored in Sinatra's `settings` object, under `settings.bouncer`.
 
-By default, Bouncer will reject any request that doesn't have a rule associated with it.
-Declare rules by calling `allow` on Bouncer, and providing a rule block. Rule blocks must 
-`always_allow(...)` is shorthand for `allow(..) { true }`. 
+By default, Bouncer will reject any request that either:
+* has no rule associated with it, or
+* has no associated rule that returns `true`
+
+Declare rules by calling `bouncer.allow` and providing a rule block. Rule blocks **must return an explicit boolean** (ie. `true` or `false`) to avoid any accidental truthy values creating unwanted access. 
 
 ```ruby
 bouncer.allow('/user_posts_blog') do
     # calculate and return some boolean result
 end
 ```
+
+**allow(:all)**
+`allow(:all)` will match any path. 
 
 ```ruby
 allow(:all) do
@@ -61,8 +66,11 @@ allow(:all) do
 end
 ```
 
+**always_allow**
+`always_allow(...)` is shorthand for `allow(..) { true }`. 
+
 ```ruby
-always_allow('user_performs_action') # Anyone can access this path
+  always_allow('/login') # Anyone can access this path
 ```
 
 ###Customization
