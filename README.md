@@ -42,6 +42,7 @@ end
 
 ###Step 2: Declare Bouncer Rules
 
+#### allow
 Bouncer is stored in Sinatra's `settings` object, under `settings.bouncer`.
 
 By default, Bouncer will reject any request that either:
@@ -56,7 +57,7 @@ bouncer.allow('/user_posts_blog') do
 end
 ```
 
-**allow(:all)**
+####allow(:all)
 `allow(:all)` will match any path. 
 
 ```ruby
@@ -66,7 +67,7 @@ allow(:all) do
 end
 ```
 
-**always_allow**
+####always_allow
 `always_allow(...)` is shorthand for `allow(..) { true }`. 
 
 ```ruby
