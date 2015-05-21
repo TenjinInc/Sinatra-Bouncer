@@ -42,6 +42,17 @@ Feature: Developer installs Bouncer
     Then it should be at "/some_path"
     Then it should have status code 200
 
+  Scenario: Bouncer blanket allows many paths with a rule
+    Given a sinatra server with bouncer and routes:
+      | type | path             |
+      | get  | /some_path       |
+    And Bouncer always allows these routes:
+      | path             |
+      | /some_path       |
+    When I visit "/some_path"
+    Then it should be at "/some_path"
+    Then it should have status code 200
+
   Scenario Outline: Bouncer allows all paths with a rule
     Given a sinatra server with bouncer and routes:
       | type | path             |

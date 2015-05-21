@@ -43,3 +43,11 @@ Given(/^Bouncer allows all routes with one rule$/) do
     true
   end
 end
+
+Given(/^Bouncer always allows these routes:$/) do |table|
+  app = Capybara.app
+
+  table.hashes.each do |row|
+    app.settings.bouncer.always_allow(row[:path])
+  end
+end
