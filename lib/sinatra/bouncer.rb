@@ -30,9 +30,7 @@ module Sinatra
 
       base_class.before do
         unless settings.bouncer.allows? request.path
-          settings.bouncer.bounce do
-            halt 401
-          end
+          settings.bouncer.bounce(self)
         end
       end
     end
@@ -50,10 +48,6 @@ module Sinatra
         @rules = Hash.new do |rules_hash, key|
           rules_hash[key] = []
         end
-
-        # @bounce_with = Proc.new do
-        #   halt 401
-        # end
       end
 
       def allow(paths, &block)
@@ -84,18 +78,12 @@ module Sinatra
         end
       end
 
-      def bounce(&block)
+      def bounce(instance)
         if bounce_with
-          bounce_with.call
+          bounce_with.call(instance)
         else
-          yield
+          instance.halt 401
         end
-
-        # if block_given?
-        # else
-        # yield
-        #   self.bounce_by.call
-        # end
       end
     end
 

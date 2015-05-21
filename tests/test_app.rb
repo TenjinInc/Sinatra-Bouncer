@@ -4,6 +4,6 @@ require 'lib/sinatra/bouncer'
 # class TestApp < Sinatra::Base
 # register Sinatra::Bouncer
 
-get '/' do
-end
+# get '/' do
+# end
 # end

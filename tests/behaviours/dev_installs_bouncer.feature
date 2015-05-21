@@ -3,6 +3,9 @@ Feature: Developer installs Bouncer
   So that I can secure my sinatra server
   I will install bouncer
 
+  # tODO: it 'should raise an exception when a rule block returns anything but explicit true or false'
+#TODO:  it 'should apply the rule to all routes when :all is supplied as the path'
+
   Scenario: Bouncer auto protects routes
     Given a sinatra server with bouncer and routes:
       | type | path      |
@@ -17,6 +20,7 @@ Feature: Developer installs Bouncer
       | get  | login     | yes     |
     And bounce_with redirects to "/login"
     When I visit "some_path"
+    Then it should have status code 200
     Then it should be at "/login"
 
   Scenario: Bouncer allows one path with a rule
@@ -42,5 +46,3 @@ Feature: Developer installs Bouncer
     Then it should have status code 200
 
 
-  it 'should raise an exception when a rule block returns anything but explicit true or false'
-  it 'should apply the rule to all routes when :all is supplied as the path'

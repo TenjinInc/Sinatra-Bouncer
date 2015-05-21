@@ -19,8 +19,8 @@ Given(/^a sinatra server with bouncer and routes:$/) do |table|
 end
 
 Given(/^bounce_with redirects to "(.*?)"$/) do |path|
-  Capybara.app.bounce_with do
-    redirect path
+  Capybara.app.bounce_with do |instance|
+    instance.redirect path
   end
 end
 
