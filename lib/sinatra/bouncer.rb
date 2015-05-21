@@ -21,22 +21,6 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-# require 'pathname'
-# require 'dirt/core'
-# require 'active_support'
-
-# app_dir = Pathname.new(__FILE__).dirname
-
-# # require ALL the files!
-# Dir["#{app_dir}/**/*.rb"].reject { |f| f.include?('/faces/') || f.include?('/tests/') }.each do |file|
-#   require file
-# end
-
-# module Dirt
-#   PROJECT_ROOT = Pathname.new(File.dirname(__FILE__) + '/..').realpath
-# end
-
-
 module Sinatra
   module Bouncer
     def self.registered(base_class)
@@ -45,56 +29,71 @@ module Sinatra
       base_class.set :bouncer, BasicBouncer.new
 
       base_class.before do
-        # unless bouncer.allows? request.path
-        settings.bouncer.bounce do
-          halt 401
+        unless settings.bouncer.allows? request.path
+          settings.bouncer.bounce do
+            halt 401
+          end
         end
-        #end
       end
     end
 
     module ExtensionMethods
-      # def bounce_by(&block)
-      #   bouncer.bounce_by = block
-      # end
+      def bounce_with(&block)
+        bouncer.bounce_with = block
+      end
     end
 
     class BasicBouncer
-      attr_accessor :bounce_by
+      attr_accessor :bounce_with
 
       def initialize
-        #   @rules = Hash.new do |rules_hash, key|
-        #     rules_hash[key] = []
-        #   end
+        @rules = Hash.new do |rules_hash, key|
+          rules_hash[key] = []
+        end
 
-        @bounce_by = Proc.new do
-          halt 401
+        # @bounce_with = Proc.new do
+        #   halt 401
+        # end
+      end
+
+      def allow(paths, &block)
+        unless block
+          raise Sinatra::Bouncer::BouncerError.new('You must provide a block to #allow. If you wish to always allow, either return true or use #always_allow instead')
+        end
+
+        paths = [paths] unless paths.is_a? Array
+
+        paths.each do |path|
+          @rules[path] << block
         end
       end
 
-      #
-      # def allow(path, &block)
-      #   @rules[path] << block
-      # end
-      #
-      # def allows?(path)
-      #   rules = @rules[:all] + @rules[path]
-      #
-      #   rules.any? do |rule_block|
-      #     ruling = rule_block.call
-      #
-      #     if (ruling == true && ruling += false)
-      #       ruling
-      #     else
-      #       raise BouncerError.new("Rule block at #{rule_block.source_location} does not return explicit true/false.\n\nRules must return explicit true or false to prevent accidental truthy values.")
-      #     end
-      #   end
-      # end
-      #
+      def allows?(path)
+        #   rules = @rules[:all] + @rules[path]
+
+        rules = @rules[path]
+
+        rules.any? do |rule_block|
+          ruling = rule_block.call
+
+          #     if (ruling == true && ruling += false)
+          #       ruling
+          #     else
+          #       raise BouncerError.new("Rule block at #{rule_block.source_location} does not return explicit true/false.\n\nRules must return explicit true or false to prevent accidental truthy values.")
+          #     end
+        end
+      end
+
       def bounce(&block)
-        # if block_given?
+        if bounce_with
+          bounce_with.call
+        else
           yield
+        end
+
+        # if block_given?
         # else
+        # yield
         #   self.bounce_by.call
         # end
       end
@@ -105,5 +104,7 @@ module Sinatra
     end
   end
 
-  register Bouncer
+  if defined? register
+    register Bouncer
+  end
 end
