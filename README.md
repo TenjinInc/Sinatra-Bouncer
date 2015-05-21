@@ -78,7 +78,7 @@ end
 The default bounce acion is to `halt 401`. Call `bounce_with` with a block that takes the sinatra application to change that behaviour. 
 
 **Example**
-```
+```ruby
 bounce_with do |application|
   application.redirect '/login'
 end
