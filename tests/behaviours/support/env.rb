@@ -7,8 +7,6 @@ require 'capybara/cucumber'
 require 'rspec/expectations'
 
 require 'tests/test_app'
-# require 'faces/web/sinatra/routes'
-# require 'core/tests/behaviours/support/env'
 
 # == CAPYBARA ==
 Capybara.app = Sinatra::Application #TestApp.new
@@ -20,8 +18,7 @@ Capybara.asset_host = 'http://localhost:4567'
 # == REGULAR SETTINGS ==
 Before do
   Capybara.reset_sessions!
-  # @current_user = nil
-  visit('/')
+  Capybara.app.settings.bouncer.instance_variable_get(:@rules).clear
 end
 
 World do

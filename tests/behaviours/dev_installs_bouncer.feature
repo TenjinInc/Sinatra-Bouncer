@@ -3,9 +3,6 @@ Feature: Developer installs Bouncer
   So that I can secure my sinatra server
   I will install bouncer
 
-  # tODO: it 'should raise an exception when a rule block returns anything but explicit true or false'
-#TODO:  it 'should apply the rule to all routes when :all is supplied as the path'
-
   Scenario: Bouncer auto protects routes
     Given a sinatra server with bouncer and routes:
       | type | path      |
@@ -34,7 +31,7 @@ Feature: Developer installs Bouncer
 
   Scenario: Bouncer allows many paths with a rule
     Given a sinatra server with bouncer and routes:
-      | type | path            |
+      | type | path             |
       | get  | /some_path       |
       | get  | /a_different_one |
     And Bouncer allows these routes with one rule:
@@ -45,4 +42,16 @@ Feature: Developer installs Bouncer
     Then it should be at "/some_path"
     Then it should have status code 200
 
-
+  Scenario Outline: Bouncer allows all paths with a rule
+    Given a sinatra server with bouncer and routes:
+      | type | path             |
+      | get  | /some_path       |
+      | get  | /a_different_one |
+    And Bouncer allows all routes with one rule
+    When I visit "<path>"
+    Then it should be at "<path>"
+    Then it should have status code 200
+  Examples:
+    | path             |
+    | /some_path       |
+    | /a_different_one |

@@ -35,3 +35,11 @@ Given(/^Bouncer allows these routes with one rule:$/) do |table|
     true
   end
 end
+
+Given(/^Bouncer allows all routes with one rule$/) do
+  app = Capybara.app
+
+  app.settings.bouncer.allow(:all) do
+    true
+  end
+end

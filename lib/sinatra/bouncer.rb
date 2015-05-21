@@ -50,6 +50,12 @@ module Sinatra
         end
       end
 
+      def always_allow(paths)
+        self.allow(paths) do
+          true
+        end
+      end
+
       def allow(paths, &block)
         unless block
           raise Sinatra::Bouncer::BouncerError.new('You must provide a block to #allow. If you wish to always allow, either return true or use #always_allow instead')
@@ -63,18 +69,21 @@ module Sinatra
       end
 
       def allows?(path)
-        #   rules = @rules[:all] + @rules[path]
+        rules = @rules[:all] + @rules[path]
 
-        rules = @rules[path]
+        # rules = @rules[path]
 
         rules.any? do |rule_block|
           ruling = rule_block.call
 
-          #     if (ruling == true && ruling += false)
-          #       ruling
-          #     else
-          #       raise BouncerError.new("Rule block at #{rule_block.source_location} does not return explicit true/false.\n\nRules must return explicit true or false to prevent accidental truthy values.")
-          #     end
+          if ruling == true || ruling == false
+            ruling
+          else
+            source = rule_block.source_location.join(':')
+            raise BouncerError.new("Rule block at does not return explicit true/false.\n\n"+
+                                       "Rules must return explicit true or false to prevent accidental truthy values.\n\n"+
+                                       "Source: #{source}\n")
+          end
         end
       end
 
