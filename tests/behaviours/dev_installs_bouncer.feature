@@ -8,7 +8,7 @@ Feature: Developer installs Bouncer
       | type | path      |
       | get  | some_path |
     When I visit "some_path"
-    Then it should have status code 401
+    Then it should have status code 403
 
   Scenario: Bouncer bounces with given block
     Given a sinatra server with bouncer and routes:

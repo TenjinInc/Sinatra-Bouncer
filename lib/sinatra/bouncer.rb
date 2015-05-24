@@ -27,7 +27,7 @@ module Sinatra
       base_class.set :bouncer, BasicBouncer.new
 
       base_class.before do
-        unless settings.bouncer.allows? request.path
+        unless settings.bouncer.allows? request.path, self
           settings.bouncer.bounce(self)
         end
       end
@@ -64,13 +64,13 @@ module Sinatra
         end
       end
 
-      def allows?(path)
+      def allows?(path, app)
         rules = @rules[:all] + @rules[path]
 
         # rules = @rules[path]
 
         rules.any? do |rule_block|
-          ruling = rule_block.call
+          ruling = rule_block.call(app)
 
           if ruling == true || ruling == false
             ruling

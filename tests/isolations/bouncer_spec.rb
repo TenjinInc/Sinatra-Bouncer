@@ -25,7 +25,7 @@ describe Sinatra::Bouncer::BasicBouncer do
         true
       end
 
-      expect { bouncer.allows?(path) }.to_not raise_error
+      expect { bouncer.allows?(path, self) }.to_not raise_error
     end
 
     it 'should raise an error if rule returns nonbool' do
@@ -35,7 +35,7 @@ describe Sinatra::Bouncer::BasicBouncer do
         nil
       end
 
-      expect { bouncer.allows?(path) }.to raise_error Sinatra::Bouncer::BouncerError
+      expect { bouncer.allows?(path, self) }.to raise_error Sinatra::Bouncer::BouncerError
     end
   end
 end
