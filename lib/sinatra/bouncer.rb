@@ -24,8 +24,6 @@
 module Sinatra
   module Bouncer
     def self.registered(base_class)
-      base_class.extend ExtensionMethods
-
       base_class.set :bouncer, BasicBouncer.new
 
       base_class.before do
@@ -35,10 +33,8 @@ module Sinatra
       end
     end
 
-    module ExtensionMethods
-      def bounce_with(&block)
-        bouncer.bounce_with = block
-      end
+    def bounce_with(&block)
+      bouncer.bounce_with = block
     end
 
     class BasicBouncer
@@ -91,7 +87,7 @@ module Sinatra
         if bounce_with
           bounce_with.call(instance)
         else
-          instance.halt 401
+          instance.halt 403
         end
       end
     end
