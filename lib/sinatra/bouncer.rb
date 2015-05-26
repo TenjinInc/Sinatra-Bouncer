@@ -24,62 +24,94 @@
 module Sinatra
   module Bouncer
     def self.registered(base_class)
+      base_class.helpers HelperMethods
+
       base_class.set :bouncer, BasicBouncer.new
 
       base_class.before do
-        unless settings.bouncer.allows? request.path, self
-          settings.bouncer.bounce(self)
+        bouncer = settings.bouncer
+
+        bouncer.rules_initializer.call
+
+        http_method = request.request_method.downcase.to_sym
+        path = request.path.downcase
+
+        unless bouncer.can?(http_method, path)
+          bouncer.bounce(self)
         end
       end
     end
 
+    # Start ExtensionMethods
     def bounce_with(&block)
       bouncer.bounce_with = block
     end
 
-    class BasicBouncer
-      attr_accessor :bounce_with
+    def rules(&block)
+      bouncer.rules_initializer = block
+    end
 
-      def initialize
-        @rules = Hash.new do |rules_hash, key|
-          rules_hash[key] = []
-        end
+    # End ExtensionMethods
+
+    module HelperMethods
+      def can(*args)
+        settings.bouncer.can(*args)
       end
 
-      def always_allow(paths)
-        self.allow(paths) do
+      def can_sometimes(*args, &block)
+        settings.bouncer.can_sometimes(*args, block)
+      end
+    end
+
+    # Data class
+    class BasicBouncer
+      attr_accessor :bounce_with
+      attr_accessor :rules_initializer
+
+      def initialize
+        @rules = Hash.new do |method_to_paths, method|
+          method_to_paths[method] = Hash.new do |path_to_rules, path|
+            path_to_rules[path] = []
+          end
+        end
+
+        @rules_initializer = Proc.new {}
+      end
+
+      def can(method, *paths)
+        if block_given?
+          raise BouncerError.new('You cannot provide a block to #can. If you wish to conditionally allow, use #can_sometimes instead.')
+        end
+
+        can_sometimes(method, *paths) do
           true
         end
       end
 
-      def allow(paths, &block)
-        unless block
-          raise Sinatra::Bouncer::BouncerError.new('You must provide a block to #allow. If you wish to always allow, either return true or use #always_allow instead')
+      def can_sometimes(method, *paths, &block)
+        unless block_given?
+          raise BouncerError.new('You must provide a block to #can_sometimes. If you wish to always allow, use #can instead.')
         end
 
-        paths = [paths] unless paths.is_a? Array
-
         paths.each do |path|
-          @rules[path] << block
+          @rules[method][path] << block
         end
       end
 
-      def allows?(path, app)
-        rules = @rules[:all] + @rules[path]
-
-        # rules = @rules[path]
+      def can?(method, path)
+        rules = @rules[:any_method][path] + @rules[method][path] #@rules[:all] + @rules[method]
 
         rules.any? do |rule_block|
-          ruling = rule_block.call(app)
+          ruling = rule_block.call #(app)
 
-          if ruling == true || ruling == false
-            ruling
-          else
+          if ruling != true && ruling != false
             source = rule_block.source_location.join(':')
             raise BouncerError.new("Rule block at does not return explicit true/false.\n\n"+
                                        "Rules must return explicit true or false to prevent accidental truthy values.\n\n"+
                                        "Source: #{source}\n")
           end
+
+          ruling
         end
       end
 
