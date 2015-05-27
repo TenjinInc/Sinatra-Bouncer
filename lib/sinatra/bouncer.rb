@@ -28,12 +28,13 @@ module Sinatra
 
       bouncer = BasicBouncer.new
 
+      # TODO: can we instead store it somehow on the actual temp request object?
       base_class.set :bouncer, bouncer
 
       base_class.before do
-        self.instance_exec &bouncer.rules_initializer
+        bouncer.reset! # must clear all rules otherwise will leave doors open
 
-        bouncer = settings.bouncer
+        self.instance_exec &bouncer.rules_initializer
 
         http_method = request.request_method.downcase.to_sym
         path = request.path.downcase
@@ -61,7 +62,7 @@ module Sinatra
       end
 
       def can_sometimes(*args, &block)
-        settings.bouncer.can_sometimes(*args, block)
+        settings.bouncer.can_sometimes(*args, &block)
       end
     end
 
@@ -78,6 +79,10 @@ module Sinatra
         end
 
         @rules_initializer = Proc.new {}
+      end
+
+      def reset!
+        @rules.clear
       end
 
       def can(method, *paths)
@@ -101,7 +106,7 @@ module Sinatra
       end
 
       def can?(method, path)
-        rules = @rules[:any_method][path] + @rules[method][path] #@rules[:all] + @rules[method]
+        rules = @rules[:any_method][path] + @rules[method][:all] + @rules[method][path] #@rules[:all] + @rules[method]
 
         rules.any? do |rule_block|
           ruling = rule_block.call #(app)

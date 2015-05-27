@@ -13,15 +13,22 @@ Given(/^a sinatra server with bouncer and routes:$/) do |table|
       'The result of path'
     end
 
-    if row[:allowed] =~ /yes|y|true/i
+    if row[:allowed] =~ /yes|y|true|once/i
       allowed_paths << path
+    end
 
-      # app.settings.bouncer.can(:get, path)
+    if row[:allowed] =~ /once/i
+      @allowed_once_paths << path
     end
   end
 
-  app.rules do
-    can(:any_method, allowed_paths) if allowed_paths
+  onces = @allowed_once_paths
 
+  app.rules do
+    allowed_paths.each do |path|
+      can_sometimes(:any_method, path) do
+        !onces.include?(path)
+      end
+    end
   end
 end

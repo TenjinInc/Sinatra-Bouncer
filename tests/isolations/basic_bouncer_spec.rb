@@ -41,6 +41,14 @@ describe Sinatra::Bouncer::BasicBouncer do
       bouncer.can?(:patch, 'some_path').should be_true
     end
 
+    it 'should accept :all to mean all paths' do
+      bouncer.can_sometimes(:get, :all) do
+        true
+      end
+
+      bouncer.can?(:get, 'some_path').should be_true
+    end
+
     it 'should accept multiple paths' do
       bouncer.can_sometimes(:post, 'some_path', 'other_path') do
         true

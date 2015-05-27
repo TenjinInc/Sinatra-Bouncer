@@ -18,3 +18,11 @@ Feature: Developer installs Bouncer
     When I visit "/some_path"
     Then it should be at "/some_path"
     Then it should have status code 200
+
+  Scenario: Bouncer forgets rules between requests
+    Given a sinatra server with bouncer and routes:
+      | method | path      | allowed |
+      | get    | some_path | once    |
+    When I double visit "/some_path"
+    Then it should be at "/some_path"
+    Then it should have status code 403

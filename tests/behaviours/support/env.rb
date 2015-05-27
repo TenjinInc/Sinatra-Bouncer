@@ -19,6 +19,8 @@ Capybara.asset_host = 'http://localhost:4567'
 Before do
   Capybara.reset_sessions!
   Capybara.app.settings.bouncer.instance_variable_get(:@rules).clear
+
+  @allowed_once_paths = []
 end
 
 World do
