@@ -26,12 +26,14 @@ module Sinatra
     def self.registered(base_class)
       base_class.helpers HelperMethods
 
-      base_class.set :bouncer, BasicBouncer.new
+      bouncer = BasicBouncer.new
+
+      base_class.set :bouncer, bouncer
 
       base_class.before do
-        bouncer = settings.bouncer
+        self.instance_exec &bouncer.rules_initializer
 
-        bouncer.rules_initializer.call
+        bouncer = settings.bouncer
 
         http_method = request.request_method.downcase.to_sym
         path = request.path.downcase
