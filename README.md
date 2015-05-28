@@ -25,7 +25,7 @@ gem install sinatra-bouncer
 require 'sinatra'
 require 'sinatra/bouncer'
 
-# ... routes and other config
+   # ... routes and other config
 ```
 
 **Modular**
@@ -40,42 +40,69 @@ class MyApp < Sinatra::Base
 end
 ```
 
-###Step 2: Declare Bouncer Rules
-
-#### allow
-Bouncer is stored in Sinatra's `settings` object, under `settings.bouncer`.
-
-By default, Bouncer will reject any request that either:
+After registration, Bouncer will reject any request that either:
 * has no rule associated with it, or
 * has no associated rule that returns `true`
 
-Declare rules by calling `bouncer.allow` and providing a rule block. Rule blocks **must return an explicit boolean** (ie. `true` or `false`) to avoid any accidental truthy values creating unwanted access. 
+###Step 2: Declare Bouncer Rules
+Call `rules` with a block that uses `can` and `can_sometimes` to declare which paths legal. 
+The rules block is run in the context of the request, which means you will have access to sinatra helpers, 
+the `request` object, and `params`.
+
+**Example**
+```ruby
+require 'sinatra'
+require 'sinatra/bouncer'
+
+rules do
+  can(:get, :all)
+  
+  # logged in users can edit their account
+  if(current_user)
+    can(:post, '/user_edits_account')
+  end
+end
+
+# ... route declarations as normal below
+```
+
+#### can
+Any route declared with #can will be accepted this request without further challenge. 
 
 ```ruby
-bouncer.allow('/user_posts_blog') do
-    # calculate and return some boolean result
+rules do
+   can(:post, '/user_posts_blog')
 end
 ```
 
-####allow(:all)
-`allow(:all)` will match any path. 
+####can_sometimes
+`can_sometimes` is for occasions that you to check further, but want to defer that choice until the path is actually attempted.
+`can_sometimes` takes a block that will be run once the path is attempted. This block **must return an explicit boolean** 
+(ie. `true` or `false`) to avoid any accidental truthy values creating unwanted access.
 
+**Example**
 ```ruby
-allow(:all) do
-    # assuming a current_user helper to load the user object (like with warden)
-    current_user.admin?
+rules do
+    can_sometimes('/login') # Anyone can access this path
 end
 ```
 
-####always_allow
-`always_allow(...)` is shorthand for `allow(..) { true }`. 
+#### :any and :all special parameters
+Passing `can` or `can_sometimes`:
+ * `:any` to the first parameter will match any HTTP method. 
+ * `:all` to the second parameter will match any path. 
 
+**Examples**
 ```ruby
-  always_allow('/login') # Anyone can access this path
+# this allows get on all paths
+can(:get, :all)
+
+# this allows any method type to run on the /login path
+can(:any, '/login')
 ```
 
-###Customization
-The default bounce acion is to `halt 401`. Call `bounce_with` with a block that takes the sinatra application to change that behaviour. 
+###Bounce Customization
+The default bounce action is to `halt 401`. Call `bounce_with` with a block that takes the sinatra application to change that behaviour. 
 
 **Example**
 ```ruby
