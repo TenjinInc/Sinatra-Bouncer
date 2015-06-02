@@ -1,14 +1,12 @@
 #Sinatra-Bouncer
 Simple authorization permissions extension for [Sinatra](http://www.sinatrarb.com/). Require the gem, then declare which routes are permitted based on your own logic. 
 
-## Quickstart
-
 **Gemfile**
 ```ruby
 gem 'sinatra-bouncer'
 ```
 
-**Command Line**
+**Terminal**
 ```sh
 gem install sinatra-bouncer
 ```
