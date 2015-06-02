@@ -112,16 +112,17 @@ describe Sinatra::Bouncer::BasicBouncer do
   end
 
   describe '#bounce' do
-    it 'should use the provided block' do
-      app = nil
-      expected_app = double('sinatra')
+    it 'should run the bounce_with block on sinatra instance' do
+      runner = nil
+      sinatra = double('sinatra')
 
-      bouncer.bounce_with = Proc.new do |a|
-        app = a
+      bouncer.bounce_with = Proc.new do
+        runner = self # self should be the sinatra double
       end
-      bouncer.bounce(expected_app)
 
-      app.should == expected_app
+      bouncer.bounce(sinatra)
+
+      runner.should == sinatra
     end
 
     it 'should halt 403 if no block provided' do

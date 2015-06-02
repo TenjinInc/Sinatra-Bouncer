@@ -124,7 +124,7 @@ module Sinatra
 
       def bounce(instance)
         if bounce_with
-          bounce_with.call(instance)
+          instance.instance_exec &bounce_with
         else
           instance.halt 403
         end
