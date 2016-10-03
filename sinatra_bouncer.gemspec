@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'sinatra-bouncer'
-  s.version = '1.1.1'
+  s.version = '1.1.2'
   s.date = Time.now.strftime('%Y-%m-%d')
   s.summary = 'Sinatra permissions plugin'
   s.description = 'Bouncer brings simple authorization to Sinatra.'
