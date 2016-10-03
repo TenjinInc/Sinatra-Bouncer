@@ -1,14 +1,12 @@
 #Sinatra-Bouncer
 Simple authorization permissions extension for [Sinatra](http://www.sinatrarb.com/). Require the gem, then declare which routes are permitted based on your own logic. 
 
-## Quickstart
-
 **Gemfile**
 ```ruby
 gem 'sinatra-bouncer'
 ```
 
-**Command Line**
+**Terminal**
 ```sh
 gem install sinatra-bouncer
 ```
@@ -96,7 +94,7 @@ can(:any, '/login')
 ```
 
 ### Custom Bounce Behaviour
-The default bounce action is to `halt 401`. Call `bounce_with` with a block to specify your own behaviour. The block is also run in a sinatra request context, so you can use helpers here as well. 
+The default bounce action is to `halt 403`. Call `bounce_with` with a block to specify your own behaviour. The block is also run in a sinatra request context, so you can use helpers here as well. 
 
 ```ruby
 require 'sinatra'
