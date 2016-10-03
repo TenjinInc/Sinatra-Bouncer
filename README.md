@@ -61,7 +61,7 @@ end
 
 ## API
 #### can
-Any route declared with #can will be accepted this request without further challenge. 
+Any route declared with #can will be accepted without further challenge. 
 
 ```ruby
 rules do
