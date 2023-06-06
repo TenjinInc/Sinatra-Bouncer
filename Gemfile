@@ -9,6 +9,7 @@ group :development do
    gem 'parallel_tests'
    gem 'rspec', '~> 3.12'
    gem 'simplecov'
+   gem 'yard'
 end
 
 # Specify your gem's dependencies in dirt_core.gemspec
