@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-Then(/^it should have status code (\d+)$/) do |status|
-   # save_and_open_page
-   expect(page.driver.status_code).to eq status.to_i
+Then 'it should have status code {int}' do |status|
+   expect(page.driver.status_code).to eq status
 end
 
-Then(/^it should be at "(.*?)"$/) do |path|
-   expect(page).to have_current_path path
+Then 'it should be at {path}' do |path|
+   expect(page).to have_current_path path.to_s
 end

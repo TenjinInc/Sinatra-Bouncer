@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Given(/^a sinatra server with bouncer and routes:$/) do |table|
+Given 'a sinatra server with bouncer and routes:' do |table|
    app = Capybara.app
 
    allowed_paths = []
