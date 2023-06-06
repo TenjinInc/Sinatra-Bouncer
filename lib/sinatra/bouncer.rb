@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #--
 # Copyright (c) 2014 Tenjin Inc.
 #
@@ -36,14 +38,12 @@ module Sinatra
          base_class.before do
             bouncer.reset! # must clear all rules otherwise will leave doors open
 
-            self.instance_exec &bouncer.rules_initializer
+            instance_exec(&bouncer.rules_initializer)
 
             http_method = request.request_method.downcase.to_sym
             path        = request.path.downcase
 
-            unless bouncer.can?(http_method, path)
-               bouncer.bounce(self)
-            end
+            bouncer.bounce(self) unless bouncer.can?(http_method, path)
          end
       end
 

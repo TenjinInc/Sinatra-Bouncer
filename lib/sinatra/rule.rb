@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Sinatra
    module Bouncer
       class Rule
@@ -5,7 +7,7 @@ module Sinatra
             if path == :all
                @path = :all
             else
-               path = '/' + path unless path.start_with?('/')
+               path = "/#{ path }" unless path.start_with?('/')
 
                @path = path.split('/')
             end
@@ -16,7 +18,7 @@ module Sinatra
          def match_path?(path)
             return true if @path == :all
 
-            path = '/' + path unless path.start_with?('/')
+            path = "/#{ path }" unless path.start_with?('/')
 
             split_path = path.split('/')
             matches    = @path.length == split_path.length
@@ -34,11 +36,15 @@ module Sinatra
          def rule_passes?
             ruling = @rule.call
 
-            unless ruling.is_a?(TrueClass)|| ruling.is_a?(FalseClass)
+            unless ruling.is_a?(TrueClass) || ruling.is_a?(FalseClass)
                source = @rule.source_location.join(':')
-               raise BouncerError.new("Rule block at does not return explicit true/false.\n\n"+
-                                            "Rules must return explicit true or false to prevent accidental truthy values.\n\n"+
-                                            "Source: #{source}\n")
+               msg    = <<~ERR
+                  Rule block at does not return explicit true/false.
+                  Rules must return explicit true or false to prevent accidental truthy values.
+                  Source: #{ source }
+               ERR
+
+               raise BouncerError, msg
             end
 
             ruling

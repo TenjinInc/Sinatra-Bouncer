@@ -1,0 +1,24 @@
+inherit_from: ~/.config/rubocop/config.yml
+
+AllCops:
+  Exclude:
+    - 'bin/*'
+
+  TargetRubyVersion: 2.7
+
+Layout/LineLength:
+  Exclude:
+    - 'spec/**/*.rb'
+
+# setting to 6 to match RubyMine autoformat
+Layout/FirstArrayElementIndentation:
+  IndentationWidth: 6
+
+# rspec blocks are huge by design
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*.rb'
+
+Metrics/ModuleLength:
+  Exclude:
+    - 'spec/**/*.rb'

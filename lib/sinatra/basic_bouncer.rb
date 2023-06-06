@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 require_relative 'rule'
 
 module Sinatra
    module Bouncer
       class BasicBouncer
-         attr_accessor :bounce_with
-         attr_accessor :rules_initializer
+         attr_accessor :bounce_with, :rules_initializer
 
          def initialize
             # @rules = Hash.new do |method_to_paths, method|
@@ -13,10 +14,11 @@ module Sinatra
             #    end
             # end
 
-            @ruleset           = Hash.new do
+            @ruleset = Hash.new do
                []
             end
-            @rules_initializer = Proc.new {}
+
+            @rules_initializer = proc {}
          end
 
          def reset!
@@ -25,7 +27,7 @@ module Sinatra
 
          def can(method, *paths)
             if block_given?
-               raise BouncerError.new('You cannot provide a block to #can. If you wish to conditionally allow, use #can_sometimes instead.')
+               raise BouncerError, 'You cannot provide a block to #can. If you wish to conditionally allow, use #can_sometimes instead.'
             end
 
             can_sometimes(method, *paths) do
@@ -35,7 +37,7 @@ module Sinatra
 
          def can_sometimes(method, *paths, &block)
             unless block_given?
-               raise BouncerError.new('You must provide a block to #can_sometimes. If you wish to always allow, use #can instead.')
+               raise BouncerError, 'You must provide a block to #can_sometimes. If you wish to always allow, use #can instead.'
             end
 
             paths.each do |path|
@@ -55,7 +57,7 @@ module Sinatra
 
          def bounce(instance)
             if bounce_with
-               instance.instance_exec &bounce_with
+               instance.instance_exec(&bounce_with)
             else
                instance.halt 403
             end
@@ -63,7 +65,6 @@ module Sinatra
       end
 
       class BouncerError < StandardError
-
       end
    end
 end

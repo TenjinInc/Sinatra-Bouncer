@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'spec_helper'
 
 describe Sinatra::Bouncer::BasicBouncer do
@@ -5,11 +7,15 @@ describe Sinatra::Bouncer::BasicBouncer do
 
    describe '#can' do
       it 'should raise an error if provided a block' do
+         msg = <<~ERR
+            You cannot provide a block to #can. If you wish to conditionally allow, use #can_sometimes instead.
+         ERR
+
          expect do
             bouncer.can(:post, 'some_path') do
-
+               # stub
             end
-         end.to raise_error(Sinatra::Bouncer::BouncerError, 'You cannot provide a block to #can. If you wish to conditionally allow, use #can_sometimes instead.')
+         end.to raise_error(Sinatra::Bouncer::BouncerError, msg.chomp)
       end
 
       it 'should handle a list of paths' do
@@ -27,8 +33,6 @@ describe Sinatra::Bouncer::BasicBouncer do
    end
 
    describe '#can_sometimes' do
-      let(:block_error_msg) { 'You must provide a block to #can_sometimes. If you wish to always allow, use #can instead.' }
-
       it 'should accept :any_method to mean all http methods' do
          bouncer.can_sometimes(:any_method, 'some_path') do
             true
@@ -81,9 +85,13 @@ describe Sinatra::Bouncer::BasicBouncer do
       end
 
       it 'should raise an error if not provided a block' do
+         msg = <<~ERR
+            You must provide a block to #can_sometimes. If you wish to always allow, use #can instead.
+         ERR
+
          expect do
             bouncer.can_sometimes(:any_method, 'some_path')
-         end.to raise_error(Sinatra::Bouncer::BouncerError, block_error_msg)
+         end.to raise_error(Sinatra::Bouncer::BouncerError, msg.chomp)
       end
    end
 
@@ -120,7 +128,7 @@ describe Sinatra::Bouncer::BasicBouncer do
          runner  = nil
          sinatra = double('sinatra')
 
-         bouncer.bounce_with = Proc.new do
+         bouncer.bounce_with = proc do
             runner = self # self should be the sinatra double
          end
 
