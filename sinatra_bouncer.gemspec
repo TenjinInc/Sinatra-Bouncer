@@ -1,19 +1,28 @@
 # frozen_string_literal: true
 
-Gem::Specification.new do |s|
-   s.name        = 'sinatra-bouncer'
-   s.version     = '1.2.0'
-   s.summary     = 'Sinatra permissions plugin'
-   s.description = 'Bouncer brings simple authorization to Sinatra.'
-   s.authors     = ['Tenjin', 'Robin Miller']
-   s.email       = 'contact@tenjin.ca'
-   s.homepage    = 'http://www.tenjin.ca'
+lib = File.expand_path('lib', __dir__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-   s.files = `git ls-files`.split("\n").reject do |path|
-      path =~ %r{^\.gitignore$|^.*\.gemspec$|^tests/}
-   end
+require 'sinatra/bouncer/version'
 
-   s.required_ruby_version = '>= 2.7'
+Gem::Specification.new do |spec|
+   spec.name    = 'sinatra-bouncer'
+   spec.version = Sinatra::Bouncer::VERSION
+   spec.authors = ['Tenjin Inc', 'Robin Miller']
+   spec.email   = %w[contact@tenjin.ca robin@tenjin.ca]
 
-   s.add_dependency 'sinatra', '>= 2.2'
+   spec.summary     = 'Sinatra permissions plugin'
+   spec.description = 'Bouncer brings simple authorization to Sinatra.'
+   spec.homepage    = 'https://github.com/TenjinInc/Sinatra-Bouncer'
+   spec.license     = 'MIT'
+   spec.metadata    = {
+         'rubygems_mfa_required' => 'true'
+   }
+
+   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+   spec.require_paths = ['lib']
+
+   spec.required_ruby_version = '>= 2.7'
+
+   spec.add_dependency 'sinatra', '>= 2.2'
 end

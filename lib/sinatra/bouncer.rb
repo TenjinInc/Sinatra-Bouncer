@@ -23,7 +23,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-require_relative 'basic_bouncer'
+require_relative 'bouncer/basic_bouncer'
 
 module Sinatra
    module Bouncer
