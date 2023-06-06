@@ -6,5 +6,6 @@ SimpleCov.start do
 
    root __dir__
 
+   add_filter 'tests/'
    # add_filter 'spec/'
 end
