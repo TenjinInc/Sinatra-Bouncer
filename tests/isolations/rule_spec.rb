@@ -7,40 +7,40 @@ describe Sinatra::Bouncer::Rule do
       it 'should match simple paths' do
          rule = Sinatra::Bouncer::Rule.new('/some_path') { true }
 
-         expect(rule.match_path?('/some_path')).to be_true
+         expect(rule.match_path?('/some_path')).to be true
       end
 
       it 'should append leading slashes to the given path' do
          rule = Sinatra::Bouncer::Rule.new('some_path') { true }
 
-         expect(rule.match_path?('/some_path')).to be_true
+         expect(rule.match_path?('/some_path')).to be true
       end
 
       it 'should append leading slashes to the tested path' do
          rule = Sinatra::Bouncer::Rule.new('/other_path') { true }
 
-         expect(rule.match_path?('other_path')).to be_true
+         expect(rule.match_path?('other_path')).to be true
       end
 
       it 'should match splats' do
          rule = Sinatra::Bouncer::Rule.new('/directory/*') { true }
 
          %w[/directory/one /directory/two /directory/three].each do |path|
-            expect(rule.match_path?(path)).to be_true
+            expect(rule.match_path?(path)).to be true
          end
       end
 
       it 'should NOT match empty string to a splat' do
          rule = Sinatra::Bouncer::Rule.new('/directory/*') { true }
 
-         expect(rule.match_path?('/directory/')).to be_false
+         expect(rule.match_path?('/directory/')).to be false
       end
 
       it 'should require that both paths are same length' do
          rule = Sinatra::Bouncer::Rule.new('/directory/*') { true }
 
          %w[/directory /directory/extra/length].each do |path|
-            expect(rule.match_path?(path)).to be_false
+            expect(rule.match_path?(path)).to be false
          end
       end
    end

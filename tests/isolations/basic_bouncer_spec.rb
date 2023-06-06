@@ -21,14 +21,14 @@ describe Sinatra::Bouncer::BasicBouncer do
       it 'should handle a list of paths' do
          bouncer.can(:post, 'some_path', 'other_path')
 
-         bouncer.can?(:post, 'some_path').should be_true
-         bouncer.can?(:post, 'other_path').should be_true
+         expect(bouncer.can?(:post, 'some_path')).to be true
+         expect(bouncer.can?(:post, 'other_path')).to be true
       end
 
       it 'should accept a splat' do
          bouncer.can(:post, 'directory/*')
 
-         bouncer.can?(:post, 'directory/some_path').should be_true
+         expect(bouncer.can?(:post, 'directory/some_path')).to be true
       end
    end
 
@@ -38,17 +38,17 @@ describe Sinatra::Bouncer::BasicBouncer do
             true
          end
 
-         bouncer.can?(:get, 'some_path').should be_true
-         bouncer.can?(:post, 'some_path').should be_true
-         bouncer.can?(:put, 'some_path').should be_true
-         bouncer.can?(:delete, 'some_path').should be_true
-         bouncer.can?(:options, 'some_path').should be_true
-         bouncer.can?(:link, 'some_path').should be_true
-         bouncer.can?(:unlink, 'some_path').should be_true
-         bouncer.can?(:head, 'some_path').should be_true
-         bouncer.can?(:trace, 'some_path').should be_true
-         bouncer.can?(:connect, 'some_path').should be_true
-         bouncer.can?(:patch, 'some_path').should be_true
+         expect(bouncer.can?(:get, 'some_path')).to be true
+         expect(bouncer.can?(:post, 'some_path')).to be true
+         expect(bouncer.can?(:put, 'some_path')).to be true
+         expect(bouncer.can?(:delete, 'some_path')).to be true
+         expect(bouncer.can?(:options, 'some_path')).to be true
+         expect(bouncer.can?(:link, 'some_path')).to be true
+         expect(bouncer.can?(:unlink, 'some_path')).to be true
+         expect(bouncer.can?(:head, 'some_path')).to be true
+         expect(bouncer.can?(:trace, 'some_path')).to be true
+         expect(bouncer.can?(:connect, 'some_path')).to be true
+         expect(bouncer.can?(:patch, 'some_path')).to be true
       end
 
       it 'should accept :all to mean all paths' do
@@ -56,7 +56,7 @@ describe Sinatra::Bouncer::BasicBouncer do
             true
          end
 
-         bouncer.can?(:get, 'some_path').should be_true
+         expect(bouncer.can?(:get, 'some_path')).to be true
       end
 
       it 'should accept a list of paths' do
@@ -64,8 +64,8 @@ describe Sinatra::Bouncer::BasicBouncer do
             true
          end
 
-         bouncer.can?(:post, 'some_path').should be_true
-         bouncer.can?(:post, 'other_path').should be_true
+         expect(bouncer.can?(:post, 'some_path')).to be true
+         expect(bouncer.can?(:post, 'other_path')).to be true
       end
 
       it 'should accept a splat' do
@@ -73,7 +73,7 @@ describe Sinatra::Bouncer::BasicBouncer do
             true
          end
 
-         bouncer.can?(:post, 'directory/some_path').should be_true
+         expect(bouncer.can?(:post, 'directory/some_path')).to be true
       end
 
       it 'should not raise an error if provided a block' do
@@ -99,11 +99,11 @@ describe Sinatra::Bouncer::BasicBouncer do
       it 'should pass when declared allowed' do
          bouncer.can(:any_method, 'some_path')
 
-         bouncer.can?(:post, 'some_path').should be_true
+         expect(bouncer.can?(:post, 'some_path')).to be true
       end
 
       it 'should fail when not declared allowed' do
-         bouncer.can?(:post, 'some_path').should be_false
+         expect(bouncer.can?(:post, 'some_path')).to be false
       end
 
       it 'should pass if the rule block passes' do
@@ -111,7 +111,7 @@ describe Sinatra::Bouncer::BasicBouncer do
             true
          end
 
-         bouncer.can?(:post, 'some_path').should be_true
+         expect(bouncer.can?(:post, 'some_path')).to be true
       end
 
       it 'should fail if the rule block fails' do
@@ -119,7 +119,7 @@ describe Sinatra::Bouncer::BasicBouncer do
             false
          end
 
-         bouncer.can?(:post, 'some_path').should be_false
+         expect(bouncer.can?(:post, 'some_path')).to be false
       end
    end
 
@@ -134,13 +134,13 @@ describe Sinatra::Bouncer::BasicBouncer do
 
          bouncer.bounce(sinatra)
 
-         runner.should == sinatra
+         expect(runner).to be sinatra
       end
 
       it 'should halt 403 if no block provided' do
          app = double('sinatra')
 
-         app.should_receive(:halt).with(403)
+         expect(app).to receive(:halt).with(403)
 
          bouncer.bounce(app)
       end

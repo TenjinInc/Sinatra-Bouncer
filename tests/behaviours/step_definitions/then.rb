@@ -2,9 +2,9 @@
 
 Then(/^it should have status code (\d+)$/) do |status|
    # save_and_open_page
-   page.driver.status_code.should == status.to_i
+   expect(page.driver.status_code).to eq status.to_i
 end
 
 Then(/^it should be at "(.*?)"$/) do |path|
-   page.current_path.should == path
+   expect(page).to have_current_path path
 end

@@ -7,7 +7,7 @@ group :development do
    gem 'cucumber', '~> 1.3.19'
    gem 'launchy'
    gem 'parallel_tests'
-   gem 'rspec', '~> 2.14.1'
+   gem 'rspec', '~> 3.12'
    gem 'simplecov'
 end
 
