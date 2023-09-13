@@ -15,13 +15,13 @@ Given 'a sinatra server with bouncer and routes:' do |table|
          'The result of path'
       end
 
-      if row[:allowed] =~ /yes|y|true|once/i
-         allowed_paths << path
-      end
+      is_once = row[:allowed] =~ /once/i
 
-      if row[:allowed] =~ /once/i
-         @allowed_once_paths << path
-      end
+      next unless is_once || parse_bool(row[:allowed])
+
+      allowed_paths << path
+
+      @allowed_once_paths << path if is_once
    end
 
    onces = @allowed_once_paths

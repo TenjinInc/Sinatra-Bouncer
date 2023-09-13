@@ -15,8 +15,8 @@ Layout/FirstArrayElementIndentation:
 # rspec blocks are huge by design
 Metrics/BlockLength:
   Exclude:
-    - 'spec/**/*.rb'
+    - 'tests/spec/**/*.rb'
 
 Metrics/ModuleLength:
   Exclude:
-    - 'spec/**/*.rb'
+    - 'tests/spec/**/*.rb'

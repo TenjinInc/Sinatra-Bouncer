@@ -27,7 +27,8 @@ module Sinatra
 
          def can(method, *paths)
             if block_given?
-               raise BouncerError, 'You cannot provide a block to #can. If you wish to conditionally allow, use #can_sometimes instead.'
+               hint = 'If you wish to conditionally allow, use #can_sometimes instead.'
+               raise BouncerError, "You cannot provide a block to #can. #{ hint }"
             end
 
             can_sometimes(method, *paths) do
@@ -36,8 +37,9 @@ module Sinatra
          end
 
          def can_sometimes(method, *paths, &block)
-            unless block_given?
-               raise BouncerError, 'You must provide a block to #can_sometimes. If you wish to always allow, use #can instead.'
+            unless block
+               hint = 'If you wish to always allow, use #can instead.'
+               raise BouncerError, "You must provide a block to #can_sometimes. #{ hint }"
             end
 
             paths.each do |path|

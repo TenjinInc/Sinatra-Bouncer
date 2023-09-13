@@ -3,7 +3,7 @@
 module Sinatra
    module Bouncer
       class Rule
-         def initialize(path, &ruleblock)
+         def initialize(path, &rule_block)
             if path == :all
                @path = :all
             else
@@ -12,7 +12,7 @@ module Sinatra
                @path = path.split('/')
             end
 
-            @rule = ruleblock
+            @rule = rule_block
          end
 
          def match_path?(path)

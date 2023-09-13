@@ -55,7 +55,6 @@ module Sinatra
       def rules(&block)
          bouncer.rules_initializer = block
       end
-
       # End ExtensionMethods
 
       module HelperMethods
@@ -63,8 +62,8 @@ module Sinatra
             settings.bouncer.can(*args)
          end
 
-         def can_sometimes(*args, &block)
-            settings.bouncer.can_sometimes(*args, &block)
+         def can_sometimes(...)
+            settings.bouncer.can_sometimes(...)
          end
       end
    end
