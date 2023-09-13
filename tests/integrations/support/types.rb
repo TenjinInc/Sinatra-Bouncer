@@ -3,13 +3,19 @@
 ParameterType(name:        'path',
               regexp:      %r{/(?:\S+/?)*},
               type:        Pathname,
-              transformer: ->(str) { Pathname.new(str) })
+              transformer: lambda do |str|
+                 Pathname.new(str)
+              end)
 
 ParameterType(name:        'boolean',
               regexp:      /(enabled|disabled|true|false|on|off|yes|no)/,
-              transformer: ->(str) { %w[enabled true on yes].include? str.downcase })
+              transformer: lambda do |str|
+                 %w[enabled true on yes].include? str.downcase
+              end)
 
 ParameterType(name:        'html element',
               regexp:      /<(\S+)>/,
               type:        String,
-              transformer: ->(str) { str })
+              transformer: lambda do |str|
+                 str
+              end)

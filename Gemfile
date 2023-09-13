@@ -2,15 +2,13 @@
 
 source 'https://rubygems.org'
 
-group :development do
-   gem 'capybara'
-   gem 'cucumber', '~> 8.0'
-   gem 'launchy'
-   gem 'parallel_tests'
-   gem 'rspec', '~> 3.12'
-   gem 'simplecov'
-   gem 'yard'
-end
-
-# Specify your gem's dependencies in dirt_core.gemspec
+# Gem dependencies in dirt_core.gemspec
 gemspec
+
+group :development do
+   gem 'capybara', '~> 3.39'
+   gem 'cucumber', '~> 8.0'
+   gem 'rspec', '~> 3.12'
+   gem 'simplecov', '~> 0.22'
+   gem 'yard', '~> 0.9'
+end

@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
    spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features|integrations)/}) }
    spec.require_paths = ['lib']
 
-   spec.required_ruby_version = '>= 2.7'
+   spec.required_ruby_version = '>= 3.1'
 
    spec.add_dependency 'sinatra', '>= 2.2'
 end

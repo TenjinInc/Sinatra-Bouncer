@@ -27,6 +27,4 @@ Before do
    @allowed_once_paths = []
 end
 
-World do
-   RSpec::Matchers
-end
+World(RSpec::Matchers)
