@@ -7,7 +7,7 @@ gemspec
 
 group :development do
    gem 'bundler', '~> 2.4'
-   gem 'rake', '~> 13.0'
+   gem 'rake', '~> 13.1'
    gem 'yard', '~> 0.9'
 end
 
