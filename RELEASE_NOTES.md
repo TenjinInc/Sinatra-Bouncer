@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ### Minor Changes
 
-* none
+* Converted Cucumber tests to Rspec integration tests for consistency
 
 ### Bugfixes
 
