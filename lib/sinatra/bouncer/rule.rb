@@ -36,7 +36,7 @@ module Sinatra
          def rule_passes?
             ruling = @rule.call
 
-            unless ruling.is_a?(TrueClass) || ruling.is_a?(FalseClass)
+            unless ruling.is_a?(TrueClass) || !ruling
                source = @rule.source_location.join(':')
                msg    = <<~ERR
                   Rule block at does not return explicit true/false.
@@ -47,7 +47,7 @@ module Sinatra
                raise BouncerError, msg
             end
 
-            ruling
+            !!ruling
          end
       end
    end

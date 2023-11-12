@@ -129,6 +129,42 @@ describe 'Integration Tests' do
          expect(response).to be_forbidden
       end
 
+      it 'should complain if a rule returns a truthy non-true' do
+         path = '/admin/dashboard'
+
+         server_klass.get path do
+            'stuff'
+         end
+
+         server_klass.rules do
+            can_sometimes get: path do
+               5
+            end
+         end
+
+         # first attempt should succeed and flip the has_run variable
+         response = browser.get path
+         expect(response).to be_server_error
+      end
+
+      it 'should NOT complain if a rule returns a falsey non-false' do
+         path = '/admin/dashboard'
+
+         server_klass.get path do
+            'stuff'
+         end
+
+         server_klass.rules do
+            can_sometimes get: path do
+               nil
+            end
+         end
+
+         # first attempt should succeed and flip the has_run variable
+         response = browser.get path
+         expect(response).to be_forbidden
+      end
+
       describe 'wildcards' do
          it 'should match wildcards at the end' do
             test_body = 'Test content'

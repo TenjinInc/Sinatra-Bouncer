@@ -46,8 +46,8 @@ describe Sinatra::Bouncer::Rule do
    end
 
    describe '#rule_passes?' do
-      it 'should raise an error if rule returns nonbool' do
-         rule = Sinatra::Bouncer::Rule.new('/something') { nil }
+      it 'should raise an error if rule returns nonbool truthy value' do
+         rule = Sinatra::Bouncer::Rule.new('/something') { 5 }
 
          expect { rule.rule_passes? }.to raise_error Sinatra::Bouncer::BouncerError
       end
@@ -58,8 +58,14 @@ describe Sinatra::Bouncer::Rule do
          expect(rule.rule_passes?).to be true
       end
 
-      it 'should return true when the block is false' do
+      it 'should return false when the block is false' do
          rule = Sinatra::Bouncer::Rule.new('/something') { false }
+
+         expect(rule.rule_passes?).to be false
+      end
+
+      it 'should return false when the block is falsey' do
+         rule = Sinatra::Bouncer::Rule.new('/something') { nil }
 
          expect(rule.rule_passes?).to be false
       end
