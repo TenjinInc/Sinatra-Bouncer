@@ -2,6 +2,7 @@
 
 module Sinatra
    module Bouncer
+      # Defines a Rule to be evaluated with each request
       class Rule
          def initialize(path, &rule_block)
             if path == :all
@@ -15,6 +16,9 @@ module Sinatra
             @rule = rule_block
          end
 
+         # Determines if the path matches the exact path or wildcard.
+         #
+         # @return `true` if the path matches
          def match_path?(path)
             return true if @path == :all
 
@@ -33,10 +37,14 @@ module Sinatra
             matches
          end
 
+         # Evaluates the rule's block. Defensively prevents truthy values from the block from allowing a route.
+         #
+         # @raise BouncerError when the rule block is a truthy value but not exactly `true`
+         # @return Exactly `true` or `false`, depending on the result of the rule block
          def rule_passes?
             ruling = @rule.call
 
-            unless ruling.is_a?(TrueClass) || !ruling
+            unless !ruling || ruling.is_a?(TrueClass)
                source = @rule.source_location.join(':')
                msg    = <<~ERR
                   Rule block at does not return explicit true/false.

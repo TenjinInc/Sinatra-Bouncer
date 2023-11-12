@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 * Converted Cucumber tests to Rspec integration tests for consistency
 * HEAD requests are evaluated like GET requests due to semantic equivalence
+* Falsey values are now acceptable rule block results
 
 ### Bugfixes
 

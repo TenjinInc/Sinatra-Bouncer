@@ -25,7 +25,9 @@
 
 require_relative 'bouncer/basic_bouncer'
 
+# Namespace module
 module Sinatra
+   # Namespace module
    module Bouncer
       def self.registered(base_class)
          base_class.helpers HelperMethods
@@ -55,8 +57,10 @@ module Sinatra
       def rules(&block)
          bouncer.rules_initializer = block
       end
+
       # End ExtensionMethods
 
+      # Sinatra helper methods
       module HelperMethods
          def can(*args)
             settings.bouncer.can(*args)

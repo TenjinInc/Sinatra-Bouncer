@@ -4,6 +4,7 @@ require_relative 'rule'
 
 module Sinatra
    module Bouncer
+      # Core implementation of Bouncer logic
       class BasicBouncer
          attr_accessor :bounce_with, :rules_initializer
 
@@ -53,8 +54,8 @@ module Sinatra
 
             method_routes.each do |method, paths|
                unless HTTP_METHOD_SYMBOLS.include?(method) || method == WILDCARD_METHOD
-                  raise BouncerError,
-                        "'#{ method }' is not a known HTTP method key. Must be one of: #{ HTTP_METHOD_SYMBOLS } or :#{ WILDCARD_METHOD }"
+                  hint = "Must be one of: #{ HTTP_METHOD_SYMBOLS } or :#{ WILDCARD_METHOD }"
+                  raise BouncerError, "'#{ method }' is not a known HTTP method key. #{ hint }"
                end
 
                paths = [paths] unless paths.respond_to? :collect
