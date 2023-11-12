@@ -50,7 +50,13 @@ describe Sinatra::Bouncer::BasicBouncer do
       end
 
       # HTTP HEAD method is, by definition equal to a GET request, so any legal GET path should also define a HEAD
-      it 'should implicitly define HEAD access when GET is defined'
+      it 'should implicitly define HEAD access when GET is defined' do
+         bouncer.can_sometimes get: '/some-path' do
+            true
+         end
+
+         expect(bouncer.can?(:head, '/some-path')).to be true
+      end
 
       it 'should complain when a key is not an HTTP method' do
          methods = Sinatra::Bouncer::BasicBouncer::HTTP_METHOD_SYMBOLS
