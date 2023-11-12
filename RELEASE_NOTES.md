@@ -9,11 +9,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ### Major Changes
 
-* none
+* Converted to hash syntax in `can` and `can_sometimes` statements
 
 ### Minor Changes
 
 * Converted Cucumber tests to Rspec integration tests for consistency
+* HEAD requests are evaluated like GET requests due to semantic equivalence
 
 ### Bugfixes
 
