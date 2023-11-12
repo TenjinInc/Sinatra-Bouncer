@@ -62,8 +62,8 @@ module Sinatra
 
       # Sinatra helper methods
       module HelperMethods
-         def can(*args)
-            settings.bouncer.can(*args)
+         def can(...)
+            settings.bouncer.can(...)
          end
 
          def can_sometimes(...)

@@ -35,7 +35,7 @@ module Sinatra
             @ruleset.clear
          end
 
-         def can(method_routes)
+         def can(**method_routes)
             if block_given?
                hint = 'If you wish to conditionally allow, use #can_sometimes instead.'
                raise BouncerError, "You cannot provide a block to #can. #{ hint }"
