@@ -129,6 +129,39 @@ describe 'Integration Tests' do
          expect(response).to be_forbidden
       end
 
+      it 'should allow access to HEAD when GET is specified' do
+         path = '/admin/dashboard'
+
+         server_klass.get path do
+            'Test content'
+         end
+
+         server_klass.rules do
+            can get: path
+         end
+
+         response = browser.head path
+
+         expect(response).to be_ok
+      end
+
+      it 'should NOT allow access to GET when HEAD is specified' do
+         path      = '/admin/dashboard'
+         test_body = 'Test content'
+
+         server_klass.get path do
+            test_body
+         end
+
+         server_klass.rules do
+            can head: path
+         end
+
+         response = browser.get path
+
+         expect(response).to be_forbidden
+      end
+
       it 'should complain if a rule returns a truthy non-true' do
          path = '/admin/dashboard'
 

@@ -54,6 +54,8 @@ Bouncer intentionally does not support some concepts.
       problem and should be separate from what they may do.
 * **No Rails Integration**
     * Bouncer is not intended to work with Rails. Use one of the Rails-based permissions gems for these situations.
+* **No Negation**
+    * There is intentionally no negation (eg. `cannot`) to preserve the default-deny frame of mind
 
 ## Installation
 
@@ -95,7 +97,9 @@ require 'sinatra/bouncer'
 
 Call `rules` with a block that uses the `#can` and `#can_sometimes` DSL methods to declare rules for paths.
 
-The rules block is run in the context of the request, which means you will have access to sinatra helpers,
+The rules block is run once as part of the configuration phase but the condition blocks are evaluated in the context of
+the
+request, which means you will have access to Sinatra helpers,
 the `request` object, and `params`.
 
 ```ruby
@@ -103,31 +107,88 @@ require 'sinatra'
 require 'sinatra/bouncer'
 
 rules do
-   # example: allow any GET request
-   can get: :all
+   # example: always allow GET requests to root path or /sign-in
+   can get: %w[/
+               /sign-in]
 
-   # example: logged in users can edit their account
-   can_sometimes post: '/user_edits_account' do
-      current_user
+   # example: logged in users can view (GET) member restricted paths and edit their account (POST)
+   can_sometimes get:  '/members/*',
+                 post: '/members/edit-account' do
+      !current_user.nil?
+   end
+
+   # example: check an arbitrary request header is present
+   can_sometimes get: '/bots/*' do
+      !request.get_header('X-CUSTOM_PROP').nil?
    end
 end
 
-# ... route declarations as normal below
+# ... Sinatra route declarations as normal ... 
 ```
 
-## API
+### HTTP Method and Route Matching
+
+Both `#can` and `#can_sometimes` accept multiple
+[HTTP methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) as symbols
+and each key is paired with one or more path strings.
+
+```ruby
+# example: single method, single route 
+can get: '/'
+
+# example: multiple methods, single route each 
+can get:  '/',
+    post: '/blog/action/save'
+
+# example: multiple methods, multiple routes (using string array syntax)
+can get:  %w[/
+             /sign-in
+             /blog/editor],
+    post: %w[/blog/action/save 
+             /blog/action/delete]
+```
+
+> **Note** Allowing GET implies allowing HEAD, since HEAD is by spec a GET without a response body. The reverse is not
+> true, however; allowing HEAD will not also allow GET.
+
+#### Wildcards and Special Symbols
+
+> **Warning** Always be cautious when using wildcards and special symbols to not accidentally open up pathways that
+> should remain private.
+
+Provide a wildcard `*` to match any string excluding slash. There is intentionally no syntax for matching wildcards
+recursively, so nested paths will also need to be declared.
+
+```ruby
+# example: match anything directly under the /members/ path
+can get: '/members/*'
+```
+
+There are also 2 special symbols:
+
+1. `:any` will match any HTTP method.
+2. `:all` will match all paths.
+
+```ruby
+# this allows any method type on the / path
+can any: '/'
+
+# this allows GET on all paths
+can get: :all
+```
 
 ### Always Allow: `can`
 
-Any route declared with #can will be accepted without further challenge.
+Any route declared with `#can` will be accepted without further challenge.
 
 ```ruby
 rules do
-   can post: '/user/blog/actions/save' # Always allow access to this path over GET
+   # Anyone can access this path over GET
+   can get: '/login'
 end
 ```
 
-### #can_sometimes
+### Conditionally Allow: `can_sometimes`
 
 `can_sometimes` is for occasions that you to check further, but want to defer that choice until the path is actually
 attempted.
@@ -138,22 +199,11 @@ attempted.
 ```ruby
 rules do
    can_sometimes get: '/login' # Anyone can access this path over GET
+
+   can_sometimes post: '/user/blog/actions/save' do
+      !current_user.nil?
+   end
 end
-```
-
-#### :any and :all special parameters
-
-Passing `can` or `can_sometimes`:
-
-* `:any` to the first parameter will match any HTTP method.
-* `:all` to the second parameter will match any path.
-
-```ruby
-# this allows get on all paths
-can get: :all
-
-# this allows any method type on the / path
-can any: '/'
 ```
 
 ### Custom Bounce Behaviour
