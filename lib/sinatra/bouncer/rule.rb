@@ -41,8 +41,8 @@ module Sinatra
          #
          # @raise BouncerError when the rule block is a truthy value but not exactly `true`
          # @return Exactly `true` or `false`, depending on the result of the rule block
-         def rule_passes?
-            ruling = @rule.call
+         def rule_passes?(context)
+            ruling = context.instance_exec(&@rule)
 
             unless !ruling || ruling.is_a?(TrueClass)
                source = @rule.source_location.join(':')

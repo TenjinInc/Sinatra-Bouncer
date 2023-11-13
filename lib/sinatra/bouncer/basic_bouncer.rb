@@ -64,7 +64,7 @@ module Sinatra
             end
          end
 
-         def can?(method, path)
+         def can?(method, path, context)
             rulesets = @ruleset[WILDCARD_METHOD] + @ruleset[method]
 
             # HEAD requests are equivalent to GET requests without response
@@ -73,7 +73,7 @@ module Sinatra
             rules = rulesets.select { |rule| rule.match_path?(path) }
 
             rules.any? do |rule_block|
-               ruling = rule_block.rule_passes?
+               ruling = rule_block.rule_passes? context
 
                ruling
             end

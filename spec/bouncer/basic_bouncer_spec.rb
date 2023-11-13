@@ -5,6 +5,8 @@ require_relative '../spec_helper'
 describe Sinatra::Bouncer::BasicBouncer do
    let(:bouncer) { Sinatra::Bouncer::BasicBouncer.new }
 
+   let(:context) { double('request context') }
+
    describe '#can' do
       it 'should raise an error if provided a block' do
          msg = <<~ERR
@@ -21,7 +23,7 @@ describe Sinatra::Bouncer::BasicBouncer do
       it 'should define a rule using can_sometimes' do
          bouncer.can post: '/some-path'
 
-         expect(bouncer.can?(:post, '/some-path')).to be true
+         expect(bouncer.can?(:post, '/some-path', context)).to be true
       end
    end
 
@@ -37,7 +39,7 @@ describe Sinatra::Bouncer::BasicBouncer do
 
          methods.each do |http_method|
             err = "expected HTTP '#{ http_method }' to be accepted, was rejected"
-            expect(bouncer.can?(http_method, '/some-path')).to be(true), err
+            expect(bouncer.can?(http_method, '/some-path', context)).to be(true), err
          end
       end
 
@@ -46,7 +48,7 @@ describe Sinatra::Bouncer::BasicBouncer do
             true
          end
 
-         expect(bouncer.can?(:get, '/some-path')).to be true
+         expect(bouncer.can?(:get, '/some-path', context)).to be true
       end
 
       # HTTP HEAD method is, by definition equal to a GET request, so any legal GET path should also define a HEAD
@@ -55,7 +57,7 @@ describe Sinatra::Bouncer::BasicBouncer do
             true
          end
 
-         expect(bouncer.can?(:head, '/some-path')).to be true
+         expect(bouncer.can?(:head, '/some-path', context)).to be true
       end
 
       it 'should complain when a key is not an HTTP method' do
@@ -74,7 +76,7 @@ describe Sinatra::Bouncer::BasicBouncer do
             true
          end
 
-         expect(bouncer.can?(:post, '/some-path')).to be true
+         expect(bouncer.can?(:post, '/some-path', context)).to be true
       end
 
       it 'should accept a list of paths' do
@@ -82,8 +84,8 @@ describe Sinatra::Bouncer::BasicBouncer do
             true
          end
 
-         expect(bouncer.can?(:post, '/some-path')).to be true
-         expect(bouncer.can?(:post, '/other-path')).to be true
+         expect(bouncer.can?(:post, '/some-path', context)).to be true
+         expect(bouncer.can?(:post, '/other-path', context)).to be true
       end
 
       it 'should accept a splat' do
@@ -91,7 +93,7 @@ describe Sinatra::Bouncer::BasicBouncer do
             true
          end
 
-         expect(bouncer.can?(:post, '/directory/some-path')).to be true
+         expect(bouncer.can?(:post, '/directory/some-path', context)).to be true
       end
 
       it 'should not raise an error if provided a block' do
@@ -117,11 +119,11 @@ describe Sinatra::Bouncer::BasicBouncer do
       it 'should pass when declared allowed' do
          bouncer.can any: '/some-path'
 
-         expect(bouncer.can?(:post, '/some-path')).to be true
+         expect(bouncer.can?(:post, '/some-path', context)).to be true
       end
 
       it 'should fail when not declared allowed' do
-         expect(bouncer.can?(:post, '/some-path')).to be false
+         expect(bouncer.can?(:post, '/some-path', context)).to be false
       end
 
       it 'should pass if the rule block passes' do
@@ -129,7 +131,7 @@ describe Sinatra::Bouncer::BasicBouncer do
             true
          end
 
-         expect(bouncer.can?(:post, 'some-path')).to be true
+         expect(bouncer.can?(:post, 'some-path', context)).to be true
       end
 
       it 'should fail if the rule block fails' do
@@ -137,7 +139,7 @@ describe Sinatra::Bouncer::BasicBouncer do
             false
          end
 
-         expect(bouncer.can?(:post, 'some-path')).to be false
+         expect(bouncer.can?(:post, 'some-path', context)).to be false
       end
    end
 

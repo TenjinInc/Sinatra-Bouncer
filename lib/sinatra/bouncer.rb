@@ -29,45 +29,26 @@ require_relative 'bouncer/basic_bouncer'
 module Sinatra
    # Namespace module
    module Bouncer
+      module ExtensionMethods
+         def bounce_with(&block)
+            bouncer.bounce_with = block
+         end
+
+         def rules(&block)
+            settings.bouncer.instance_exec(&block)
+         end
+      end
+
       def self.registered(base_class)
-         base_class.helpers HelperMethods
+         base_class.set :bouncer, BasicBouncer.new
 
-         bouncer = BasicBouncer.new
-
-         # TODO: can we instead store it somehow on the actual temp request object?
-         base_class.set :bouncer, bouncer
+         base_class.extend ExtensionMethods
 
          base_class.before do
-            bouncer.reset! # must clear all rules otherwise will leave doors open
-
-            instance_exec(&bouncer.rules_initializer)
-
             http_method = request.request_method.downcase.to_sym
             path        = request.path.downcase
 
-            bouncer.bounce(self) unless bouncer.can?(http_method, path)
-         end
-      end
-
-      # Start ExtensionMethods
-      def bounce_with(&block)
-         bouncer.bounce_with = block
-      end
-
-      def rules(&block)
-         bouncer.rules_initializer = block
-      end
-
-      # End ExtensionMethods
-
-      # Sinatra helper methods
-      module HelperMethods
-         def can(...)
-            settings.bouncer.can(...)
-         end
-
-         def can_sometimes(...)
-            settings.bouncer.can_sometimes(...)
+            settings.bouncer.bounce(self) unless settings.bouncer.can?(http_method, path, self)
          end
       end
    end
