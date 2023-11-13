@@ -351,4 +351,33 @@ describe 'Integration Tests' do
          end
       end
    end
+
+   describe 'custom bounce behaviour' do
+      it 'should use the custom bounce behaviour' do
+         path      = '/admin/dashboard'
+         test_body = 'Test content'
+
+         server_klass = Class.new Sinatra::Base do
+            register Sinatra::Bouncer
+
+            rules do
+               # none
+            end
+
+            bounce_with do
+               halt 418 # teapots are not allowed
+            end
+
+            get path do
+               test_body
+            end
+         end
+
+         browser = Rack::Test::Session.new(server_klass)
+
+         response = browser.get path
+
+         expect(response.status).to be 418
+      end
+   end
 end
