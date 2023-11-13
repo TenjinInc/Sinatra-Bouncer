@@ -9,6 +9,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ### Major Changes
 
+* none
+
+### Minor Changes
+
+* none
+
+### Bugfixes
+
+* none
+
+## [2.0.0] - 2023-11-13
+
+### Major Changes
+
 * Converted to hash syntax in `can` and `can_sometimes` statements
 
 ### Minor Changes
