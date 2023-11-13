@@ -23,26 +23,15 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+require 'sinatra/base'
 require_relative 'bouncer/basic_bouncer'
 
 # Namespace module
 module Sinatra
    # Namespace module
    module Bouncer
-      module ExtensionMethods
-         def bounce_with(&block)
-            bouncer.bounce_with = block
-         end
-
-         def rules(&block)
-            settings.bouncer.instance_exec(&block)
-         end
-      end
-
       def self.registered(base_class)
          base_class.set :bouncer, BasicBouncer.new
-
-         base_class.extend ExtensionMethods
 
          base_class.before do
             http_method = request.request_method.downcase.to_sym
@@ -51,9 +40,15 @@ module Sinatra
             settings.bouncer.bounce(self) unless settings.bouncer.can?(http_method, path, self)
          end
       end
+
+      def bounce_with(&block)
+         bouncer.bounce_with = block
+      end
+
+      def rules(&block)
+         settings.bouncer.instance_exec(&block)
+      end
    end
 
-   if defined? register
-      register Bouncer
-   end
+   register Sinatra::Bouncer
 end

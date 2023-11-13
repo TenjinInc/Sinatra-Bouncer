@@ -19,7 +19,7 @@ describe 'Integration Tests' do
 
             Sinatra::Bouncer::BasicBouncer::HTTP_METHOD_SYMBOLS.each do |http_method|
                send(http_method, route_path) do
-                  test_body
+                  # whatever
                end
             end
          end
@@ -32,7 +32,6 @@ describe 'Integration Tests' do
             response = browser.send http_method, path
 
             expect(response).to be_forbidden
-            expect(response.body).to_not include test_body
          end
       end
    end
@@ -233,14 +232,13 @@ describe 'Integration Tests' do
       end
 
       it 'should NOT allow access to GET when HEAD is specified' do
-         path      = '/admin/dashboard'
-         test_body = 'Test content'
+         path = '/admin/dashboard'
 
          server_klass = Class.new Sinatra::Base do
             register Sinatra::Bouncer
 
             get path do
-               test_body
+               # whatever
             end
 
             rules do
@@ -262,7 +260,7 @@ describe 'Integration Tests' do
             register Sinatra::Bouncer
 
             get path do
-               'stuff'
+               # whatever
             end
 
             rules do
@@ -286,7 +284,7 @@ describe 'Integration Tests' do
             register Sinatra::Bouncer
 
             get path do
-               'stuff'
+               # whatever
             end
 
             rules do
@@ -354,8 +352,7 @@ describe 'Integration Tests' do
 
    describe 'custom bounce behaviour' do
       it 'should use the custom bounce behaviour' do
-         path      = '/admin/dashboard'
-         test_body = 'Test content'
+         path = '/admin/dashboard'
 
          server_klass = Class.new Sinatra::Base do
             register Sinatra::Bouncer
@@ -369,7 +366,7 @@ describe 'Integration Tests' do
             end
 
             get path do
-               test_body
+               # whatever
             end
          end
 

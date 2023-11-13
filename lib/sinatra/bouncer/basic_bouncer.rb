@@ -31,10 +31,6 @@ module Sinatra
             @rules_initializer = proc {}
          end
 
-         def reset!
-            @ruleset.clear
-         end
-
          def can(**method_routes)
             if block_given?
                hint = 'If you wish to conditionally allow, use #can_sometimes instead.'

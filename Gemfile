@@ -8,12 +8,13 @@ gemspec
 group :development do
    gem 'bundler', '~> 2.4'
    gem 'rake', '~> 13.1'
+   gem 'rubocop', '~> 1.57'
+   gem 'rubocop-performance', '~> 1.19'
    gem 'yard', '~> 0.9'
 end
 
 group :test do
-   gem 'capybara', '~> 3.39'
-   gem 'cucumber', '~> 8.0'
+   gem 'rack-test', '~> 2.1'
    gem 'rspec', '~> 3.12'
    gem 'simplecov', '~> 0.22'
 end

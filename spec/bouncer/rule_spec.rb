@@ -52,13 +52,13 @@ describe Sinatra::Bouncer::Rule do
       it 'should raise an error if rule returns nonbool truthy value' do
          rule = Sinatra::Bouncer::Rule.new('/something') { 5 }
 
-         expect { rule.rule_passes? context }.to raise_error Sinatra::Bouncer::BouncerError
+         expect { rule.rule_passes?(context) }.to raise_error Sinatra::Bouncer::BouncerError
       end
 
       it 'should return true when the block is true' do
          rule = Sinatra::Bouncer::Rule.new('/something') { true }
 
-         expect(rule.rule_passes? context).to be true
+         expect(rule.rule_passes?(context)).to be true
       end
 
       it 'should execute the rule block in the context of the request' do
@@ -67,19 +67,19 @@ describe Sinatra::Bouncer::Rule do
             request == req
          end
 
-         expect(rule.rule_passes? context).to be true
+         expect(rule.rule_passes?(context)).to be true
       end
 
       it 'should return false when the block is false' do
          rule = Sinatra::Bouncer::Rule.new('/something') { false }
 
-         expect(rule.rule_passes? context).to be false
+         expect(rule.rule_passes?(context)).to be false
       end
 
       it 'should return false when the block is falsey' do
          rule = Sinatra::Bouncer::Rule.new('/something') { nil }
 
-         expect(rule.rule_passes? context).to be false
+         expect(rule.rule_passes?(context)).to be false
       end
    end
 end

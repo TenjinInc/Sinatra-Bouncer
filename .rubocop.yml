@@ -3,6 +3,7 @@ inherit_from: ~/.config/rubocop/config.yml
 AllCops:
   Exclude:
     - 'bin/*'
+    - 'benchmarks/*'
 
 Layout/LineLength:
   Exclude:

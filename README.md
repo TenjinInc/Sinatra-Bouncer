@@ -80,6 +80,10 @@ require 'sinatra/bouncer'
 class MyApp < Sinatra::Base
    register Sinatra::Bouncer
 
+   rules do
+      # ... can statements ...
+   end
+
    # ... routes and other config
 end
 ```
@@ -89,6 +93,10 @@ end
 ```ruby
 require 'sinatra'
 require 'sinatra/bouncer'
+
+rules do
+   # ... can statements ...
+end
 
 # ... routes and other config
 ```

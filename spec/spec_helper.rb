@@ -9,6 +9,4 @@ SimpleCov.command_name 'spec'
 
 require 'lib/sinatra/bouncer'
 
-require 'rspec/matchers'
-require 'rack/test'
-require 'sinatra/base'
+Bundler.require :test
