@@ -7,117 +7,84 @@ describe Sinatra::Bouncer::BasicBouncer do
 
    let(:context) { double('request context') }
 
-   describe '#can' do
-      it 'should raise an error if provided a block' do
-         msg = <<~ERR
-            You cannot provide a block to #can. If you wish to conditionally allow, use #can_sometimes instead.
-         ERR
+   describe '#initialize' do
+      it 'should register a default :anyone role' do
+         anyone = bouncer.anyone
 
-         expect do
-            bouncer.can post: '/some-path' do
-               # stub
-            end
-         end.to raise_error(Sinatra::Bouncer::BouncerError, msg.chomp)
-      end
+         # the rule should exist...
+         expect(anyone).to be_a Sinatra::Bouncer::Rule
 
-      it 'should define a rule using can_sometimes' do
-         bouncer.can post: '/some-path'
-
-         expect(bouncer.can?(:post, '/some-path', context)).to be true
+         # ... and it should be default true
+         anyone.can get: '/something'
+         expect(anyone.allow?(:get, 'something', {})).to be true
       end
    end
 
-   describe '#can_sometimes' do
-      it 'should accept :any to mean all http methods' do
-         bouncer.can_sometimes any: '/some-path' do
+   describe '#role' do
+      it 'should register a role under the given identifier' do
+         bouncer.role :admin do
             true
          end
 
-         methods = Sinatra::Bouncer::BasicBouncer::HTTP_METHODS.collect do |http_method|
-            http_method.downcase.to_sym
-         end
-
-         methods.each do |http_method|
-            err = "expected HTTP '#{ http_method }' to be accepted, was rejected"
-            expect(bouncer.can?(http_method, '/some-path', context)).to be(true), err
-         end
+         expect(bouncer.admin).to be_a Sinatra::Bouncer::Rule
       end
 
-      it 'should accept :all to mean all paths' do
-         bouncer.can_sometimes get: :all do
-            true
-         end
-
-         expect(bouncer.can?(:get, '/some-path', context)).to be true
-      end
-
-      # HTTP HEAD method is, by definition equal to a GET request, so any legal GET path should also define a HEAD
-      it 'should implicitly define HEAD access when GET is defined' do
-         bouncer.can_sometimes get: '/some-path' do
-            true
-         end
-
-         expect(bouncer.can?(:head, '/some-path', context)).to be true
-      end
-
-      it 'should complain when a key is not an HTTP method' do
-         methods = Sinatra::Bouncer::BasicBouncer::HTTP_METHOD_SYMBOLS
-
+      it 'should raise an error when no identifier is provided' do
          expect do
-            bouncer.can_sometimes bogus: '/some-path' do
+            bouncer.role nil do
                true
             end
-         end.to raise_error Sinatra::Bouncer::BouncerError,
-                            "'bogus' is not a known HTTP method key. Must be one of: #{ methods } or :any"
+         end.to raise_error ArgumentError, 'must provide a role identifier to #role'
       end
 
-      it 'should accept a single path' do
-         bouncer.can_sometimes post: '/some-path' do
-            true
-         end
-
-         expect(bouncer.can?(:post, '/some-path', context)).to be true
-      end
-
-      it 'should accept a list of paths' do
-         bouncer.can_sometimes post: %w[/some-path /other-path] do
-            true
-         end
-
-         expect(bouncer.can?(:post, '/some-path', context)).to be true
-         expect(bouncer.can?(:post, '/other-path', context)).to be true
-      end
-
-      it 'should accept a splat' do
-         bouncer.can_sometimes post: '/directory/*' do
-            true
-         end
-
-         expect(bouncer.can?(:post, '/directory/some-path', context)).to be true
-      end
-
-      it 'should not raise an error if provided a block' do
+      it 'should raise an error when no block is provided' do
          expect do
-            bouncer.can_sometimes any: '/some-path' do
+            bouncer.role :admin
+         end.to raise_error ArgumentError, 'must provide a role condition block to #role'
+      end
+
+      it 'should raise an error when the role was already defined' do
+         expect do
+            bouncer.role :admin do
                true
             end
-         end.to_not raise_error
+            bouncer.role :admin do
+               true
+            end
+         end.to raise_error ArgumentError, "role called 'admin' already defined"
       end
 
-      it 'should raise an error if not provided a block' do
-         msg = <<~ERR
-            You must provide a block to #can_sometimes. If you wish to always allow, use #can instead.
-         ERR
+      it 'should respond to the role name' do
+         bouncer.role :admin do
+            true
+         end
 
-         expect do
-            bouncer.can_sometimes any: '/some-path'
-         end.to raise_error(Sinatra::Bouncer::BouncerError, msg.chomp)
+         expect(bouncer.respond_to?(:admin)).to be true
+      end
+
+      it 'should not respond to unknown methods' do
+         expect(bouncer.respond_to?(:admin)).to be false
+         expect { bouncer.admin }.to raise_error NoMethodError
+      end
+
+      it 'should suggest known methods' do
+         bouncer.role :admin do
+            true
+         end
+
+         # need to use a generic satisfy block because the normal raise_error matcher only tests the original message,
+         # and does not include the DidYouMean message addition
+         error_checker = satisfy do |error|
+            error.is_a?(NoMethodError) && error.message.include?('Did you mean?  admin')
+         end
+
+         expect { bouncer.admind }.to raise_error error_checker
       end
    end
 
    describe '#can?' do
       it 'should pass when declared allowed' do
-         bouncer.can any: '/some-path'
+         bouncer.anyone.can post: '/some-path'
 
          expect(bouncer.can?(:post, '/some-path', context)).to be true
       end
@@ -127,7 +94,7 @@ describe Sinatra::Bouncer::BasicBouncer do
       end
 
       it 'should pass if the rule block passes' do
-         bouncer.can_sometimes(any: '/some-path') do
+         bouncer.anyone.can_sometimes post: '/some-path' do
             true
          end
 
@@ -135,7 +102,7 @@ describe Sinatra::Bouncer::BasicBouncer do
       end
 
       it 'should fail if the rule block fails' do
-         bouncer.can_sometimes any: 'some-path' do
+         bouncer.anyone.can_sometimes post: 'some-path' do
             false
          end
 

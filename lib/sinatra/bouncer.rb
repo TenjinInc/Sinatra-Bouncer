@@ -45,6 +45,10 @@ module Sinatra
          bouncer.bounce_with = block
       end
 
+      def role(identifier, &block)
+         settings.bouncer.role identifier, &block
+      end
+
       def rules(&block)
          settings.bouncer.instance_exec(&block)
       end

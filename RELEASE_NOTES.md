@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ### Major Changes
 
-* none
+* Changed rules DSL to be role-oriented
 
 ### Minor Changes
 
