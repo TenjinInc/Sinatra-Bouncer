@@ -37,9 +37,6 @@ module Sinatra
                raise BouncerError, "You must provide a block to #can_sometimes. #{ hint }"
             end
 
-            # TODO: enable chaining
-            # clone = Rule.new(&@conditions.first)
-
             method_routes.each do |method, paths|
                validate_http_method! method
 
@@ -49,8 +46,6 @@ module Sinatra
             end
 
             @conditions << block
-
-            # clone
          end
 
          def can(**method_routes)
