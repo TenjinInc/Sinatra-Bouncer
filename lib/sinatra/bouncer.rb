@@ -42,7 +42,7 @@ module Sinatra
       end
 
       def bounce_with(&block)
-         bouncer.bounce_with = block
+         bouncer.bounce_with(&block)
       end
 
       def role(identifier, &block)

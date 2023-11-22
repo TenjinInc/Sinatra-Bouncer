@@ -141,7 +141,7 @@ describe Sinatra::Bouncer::BasicBouncer do
          runner  = nil
          sinatra = double('sinatra')
 
-         bouncer.bounce_with = proc do
+         bouncer.bounce_with do
             runner = self # self should be the sinatra double
          end
 

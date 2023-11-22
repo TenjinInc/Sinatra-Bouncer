@@ -130,7 +130,7 @@ describe Sinatra::Bouncer::Rule do
    describe '#incomplete?' do
       let(:rule) do
          Sinatra::Bouncer::Rule.new do
-            true
+            # whatever
          end
       end
 

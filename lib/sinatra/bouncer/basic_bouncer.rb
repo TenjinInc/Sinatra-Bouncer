@@ -6,7 +6,7 @@ module Sinatra
    module Bouncer
       # Core implementation of Bouncer logic
       class BasicBouncer
-         attr_accessor :bounce_with, :rules_initializer
+         attr_accessor :rules_initializer
 
          def initialize
             @rules = []
@@ -16,6 +16,10 @@ module Sinatra
             end
 
             @rules_initializer = proc {}
+         end
+
+         def bounce_with(&block)
+            @bounce_strategy = block
          end
 
          def rules(&block)
@@ -32,8 +36,8 @@ module Sinatra
          end
 
          def bounce(instance)
-            if bounce_with
-               instance.instance_exec(&bounce_with)
+            if @bounce_strategy
+               instance.instance_exec(&@bounce_strategy)
             else
                instance.halt 403
             end
