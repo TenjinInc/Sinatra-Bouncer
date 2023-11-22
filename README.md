@@ -111,7 +111,7 @@ uses your defined roles with the `#can` or `#can_sometimes` DSL methods to decla
 paths are allowed.
 
 The rules block is run once as part of the configuration phase but the condition blocks are evaluated in the context of
-the request. This means they have access to Sinatra helpers, the `request` object, and `params`.
+the request handler. This means they have access to Sinatra helpers, the `request` object, and `params`.
 
 ```ruby
 require 'sinatra'
@@ -234,7 +234,7 @@ end
 ### Custom Bounce Behaviour
 
 The default bounce action is to `halt 403`. Call `bounce_with` with a block to specify your own behaviour. The block is
-also run in a sinatra request context, so you can use helpers here as well.
+also run in a Sinatra request handler context, so you can use helpers here as well.
 
 ```ruby
 require 'sinatra'
