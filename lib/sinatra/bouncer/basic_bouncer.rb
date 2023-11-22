@@ -30,6 +30,8 @@ module Sinatra
          end
 
          def can?(method, path, context)
+            method = method.downcase.to_sym unless method.is_a? Symbol
+
             @rules.any? do |rule|
                rule.allow? method, path, context
             end

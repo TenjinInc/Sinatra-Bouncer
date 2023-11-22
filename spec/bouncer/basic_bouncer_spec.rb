@@ -115,6 +115,24 @@ describe Sinatra::Bouncer::BasicBouncer do
          expect(bouncer.can?(:post, '/some-path', context)).to be true
       end
 
+      it 'should ignore case of the request path' do
+         bouncer.anyone.can post: '/some-path'
+
+         expect(bouncer.can?(:post, '/SOME-PATH', context)).to be true
+      end
+
+      it 'should ignore case of the declared path' do
+         bouncer.anyone.can post: '/SOME-PATH'
+
+         expect(bouncer.can?(:post, '/some-path', context)).to be true
+      end
+
+      it 'should convert method string to symbol' do
+         bouncer.anyone.can post: '/some-path'
+
+         expect(bouncer.can?('POST', '/some-path', context)).to be true
+      end
+
       it 'should fail when not declared allowed' do
          expect(bouncer.can?(:post, '/some-path', context)).to be false
       end

@@ -131,10 +131,14 @@ module Sinatra
          end
 
          def normalize_path(path)
-            if path == :all || path.start_with?('/')
+            if path == :all
                path
             else
-               "/#{ path }"
+               if path.start_with?('/')
+                  path
+               else
+                  "/#{ path }"
+               end.downcase
             end
          end
       end

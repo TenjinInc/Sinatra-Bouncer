@@ -34,10 +34,7 @@ module Sinatra
          base_class.set :bouncer, BasicBouncer.new
 
          base_class.before do
-            http_method = request.request_method.downcase.to_sym
-            path        = request.path.downcase
-
-            settings.bouncer.bounce(self) unless settings.bouncer.can?(http_method, path, self)
+            settings.bouncer.bounce(self) unless settings.bouncer.can?(request.request_method, request.path, self)
          end
       end
    end
