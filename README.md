@@ -5,35 +5,38 @@ routes are permitted based on your own logic.
 
 ## Big Picture
 
-Bouncer rules look like:
+Bouncer's syntax looks like:
 
 ```ruby
+# You can define roles to collect permissions together
+role :admins do
+   current_user&.admin?
+end
+
 rules do
    # Routes match based on one or more strings. 
-   can get:  '/',
-       post: %w[/user/sign-in
-                /user/sign-out]
+   anyone.can get:  '/',
+              post: ['/user/sign-in',
+                     '/user/sign-out']
 
    # Wildcards match anything directly under that path 
-   can get: '/lib/js/*'
+   anyone.can get: '/lib/js/*'
 
-   # Use a conditional rule block for additional logic
-   can_sometimes get:  '/admin/*',
-                 post: '/admin/actions/*' do
-      current_user.admin?
-   end
+   admins.can get:  '/admin/*',
+              post: '/admin/actions/*'
 
    # ... etc ...
 end
-
 ```
 
-## Features
+### Features
 
 Here's what this Gem provides:
 
 * **Block-by-default**
     * Any route must be explicitly allowed
+* **Role-Oriented**
+    * The [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) is constructed to be easily readable
 * **Declarative Syntax**
     * Straightforward syntax reduces complexity of layered permissions
     * Keeps permissions together for clarity
@@ -44,7 +47,7 @@ Here's what this Gem provides:
 * **Forced Boolean Affirmation**
     * Condition blocks must explicitly return `true`, avoiding accidental truthy values
 
-## Anti-Features
+### Anti-Features
 
 Bouncer intentionally does not support some concepts.
 
@@ -103,57 +106,77 @@ end
 
 ## Usage
 
-Call `rules` with a block that uses the `#can` and `#can_sometimes` DSL methods to declare rules for paths.
+Define roles using the `role` method and provide each one with a condition block. Then call `rules` with a block that
+uses your defined roles with the `#can` or `#can_sometimes` DSL methods to declare which
+paths are allowed.
 
 The rules block is run once as part of the configuration phase but the condition blocks are evaluated in the context of
-the
-request, which means you will have access to Sinatra helpers,
-the `request` object, and `params`.
+the request. This means they have access to Sinatra helpers, the `request` object, and `params`.
 
 ```ruby
 require 'sinatra'
 require 'sinatra/bouncer'
 
+role :members do
+   !current_user.nil?
+end
+
+role :bots do
+   !request.get_header('X-CUSTOM-BOT').nil?
+end
+
 rules do
-   # example: always allow GET requests to root path or /sign-in
-   can get: %w[/
-               /sign-in]
+   # example: always allow GET requests to '/' and '/about'; and POST requests to '/sign-in'
+   anyone.can get:  ['/', '/about'],
+              post: '/sign-in'
 
    # example: logged in users can view (GET) member restricted paths and edit their account (POST)
-   can_sometimes get:  '/members/*',
-                 post: '/members/edit-account' do
-      !current_user.nil?
+   members.can get: '/members/*'
+   members.can_sometimes post: '/members/edit-account' do
+      current_user && current_user.id == params[:id]
    end
 
-   # example: check an arbitrary request header is present
-   can_sometimes get: '/bots/*' do
-      !request.get_header('X-CUSTOM_PROP').nil?
-   end
+   # example: require presence of arbitrary request header in the role condition
+   bots.can get: '/bots/*'
 end
 
 # ... Sinatra route declarations as normal ... 
 ```
 
+### Role Declarations
+
+Roles are declared using the `#role` method in your Sinatra config. Each one must be provided a condition block that
+must return exactly `true` when the role applies.
+
+```ruby
+# let's pretend that current_user is a helper that returns the user from Warden
+role :admins do
+   current_user&.admin?
+end
+```
+
+> **Note:** There is a default role called `anyone` that is always declared for you.
+
 ### HTTP Method and Route Matching
 
-Both `#can` and `#can_sometimes` accept multiple
-[HTTP methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) as symbols
+Both `#can` and `#can_sometimes` accept symbol
+[HTTP methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) as keys
 and each key is paired with one or more path strings.
 
 ```ruby
 # example: single method, single route 
-can get: '/'
+anyone.can get: '/'
 
 # example: multiple methods, single route each 
-can get:  '/',
-    post: '/blog/action/save'
+anyone.can get:  '/',
+           post: '/blog/action/save'
 
 # example: multiple methods, multiple routes (using string array syntax)
-can get:  %w[/
-             /sign-in
-             /blog/editor],
-    post: %w[/blog/action/save 
-             /blog/action/delete]
+anyone.can get:  %w[/
+                    /sign-in
+                    /blog/editor],
+           post: %w[/blog/action/save 
+                    /blog/action/delete]
 ```
 
 > **Note** Allowing GET implies allowing HEAD, since HEAD is by spec a GET without a response body. The reverse is not
@@ -161,29 +184,24 @@ can get:  %w[/
 
 #### Wildcards and Special Symbols
 
-> **Warning** Always be cautious when using wildcards and special symbols to not accidentally open up pathways that
-> should remain private.
-
 Provide a wildcard `*` to match any string excluding slash. There is intentionally no syntax for matching wildcards
 recursively, so nested paths will also need to be declared.
 
 ```ruby
 # example: match anything directly under the /members/ path
-can get: '/members/*'
+members.can get: '/members/*'
 ```
 
-There are also 2 special symbols:
-
-1. `:any` will match any HTTP method.
-2. `:all` will match all paths.
+There is also a special symbol, `:all` that matches all paths. It is intended for rare use
+with superadmin-type accounts.
 
 ```ruby
-# this allows any method type on the / path
-can any: '/'
-
-# this allows GET on all paths
-can get: :all
+# this allows GET on all paths to those in the admin group
+admins.can get: :all
 ```
+
+> **Warning** Always be cautious when using wildcards and special symbols to avoid accidentally opening up pathways that
+> should remain private.
 
 ### Always Allow: `can`
 
@@ -192,24 +210,23 @@ Any route declared with `#can` will be accepted without further challenge.
 ```ruby
 rules do
    # Anyone can access this path over GET
-   can get: '/login'
+   anyone.can get: '/login'
 end
 ```
 
 ### Conditionally Allow: `can_sometimes`
 
-`can_sometimes` is for occasions that you to check further, but want to defer that choice until the path is actually
-attempted.
-`can_sometimes` takes a block that will be run once the path is attempted. This block **must return an explicit boolean
-**
-(ie. `true` or `false`) to avoid any accidental truthy values creating unwanted access.
+`can_sometimes` takes a condition block that will be run once the path is attempted. This block **must return an
+explicit boolean** (ie. `true` or `false`) to avoid any accidental truthy values creating unwanted access.
 
 ```ruby
-rules do
-   can_sometimes get: '/login' # Anyone can access this path over GET
+role :users do
+   !current_user.nil?
+end
 
-   can_sometimes post: '/user/blog/actions/save' do
-      !current_user.nil?
+rules do
+   users.can_sometimes post: '/user/save' do
+      current_user.id == params[:id]
    end
 end
 ```
