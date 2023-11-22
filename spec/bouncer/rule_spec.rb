@@ -57,7 +57,7 @@ describe Sinatra::Bouncer::Rule do
 
       it 'should not raise an error if provided a block' do
          expect do
-            rule.can_sometimes any: '/some-path' do
+            rule.can_sometimes get: '/some-path' do
                # whatever
             end
          end.to_not raise_error
@@ -69,19 +69,8 @@ describe Sinatra::Bouncer::Rule do
          ERR
 
          expect do
-            rule.can_sometimes any: '/some-path'
+            rule.can_sometimes get: '/some-path'
          end.to raise_error(Sinatra::Bouncer::BouncerError, msg.chomp)
-      end
-
-      it 'should accept :any to mean all http methods' do
-         rule.can_sometimes any: '/some-path' do
-            true
-         end
-
-         Sinatra::Bouncer::Rule::HTTP_METHOD_SYMBOLS.each do |http_method|
-            err = "expected HTTP '#{ http_method }' to be accepted, was rejected"
-            expect(rule.allow?(http_method, '/some-path', context)).to be(true), err
-         end
       end
 
       it 'should accept :all to mean all paths' do
@@ -109,7 +98,7 @@ describe Sinatra::Bouncer::Rule do
                # whatever
             end
          end.to raise_error Sinatra::Bouncer::BouncerError,
-                            "'bogus' is not a known HTTP method key. Must be one of: #{ methods } or :any"
+                            "'bogus' is not a known HTTP method key. Must be one of: #{ methods }"
       end
 
       it 'should accept a single path' do

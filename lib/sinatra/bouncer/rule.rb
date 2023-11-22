@@ -16,9 +16,6 @@ module Sinatra
             http_method.downcase.to_sym
          end.freeze
 
-         # Method symbol used to match any method
-         WILDCARD_METHOD = :any
-
          def initialize(&block)
             raise ArgumentError, 'must provide a block to Bouncer::Rule' unless block
 
@@ -76,10 +73,9 @@ module Sinatra
          private
 
          def validate_http_method!(method)
-            return if HTTP_METHOD_SYMBOLS.include?(method) || method == WILDCARD_METHOD
+            return if HTTP_METHOD_SYMBOLS.include?(method)
 
-            hint = "Must be one of: #{ HTTP_METHOD_SYMBOLS } or :#{ WILDCARD_METHOD }"
-            raise BouncerError, "'#{ method }' is not a known HTTP method key. #{ hint }"
+            raise BouncerError, "'#{ method }' is not a known HTTP method key. Must be one of: #{ HTTP_METHOD_SYMBOLS }"
          end
 
          # Determines if the path matches the exact path or wildcard.
@@ -107,7 +103,7 @@ module Sinatra
          end
 
          def matchers_for(method)
-            matchers = @routes[:any] + @routes[method]
+            matchers = @routes[method]
 
             matchers += @routes[:get] if method == :head
 
