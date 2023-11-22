@@ -16,10 +16,9 @@ module Sinatra
             end
 
             @rules_initializer = proc {}
-         end
-
-         def bounce_with(&block)
-            @bounce_strategy = block
+            @bounce_strategy   = proc do
+               halt 403
+            end
          end
 
          def rules(&block)
@@ -37,12 +36,12 @@ module Sinatra
             end
          end
 
+         def bounce_with(&block)
+            @bounce_strategy = block
+         end
+
          def bounce(instance)
-            if @bounce_strategy
-               instance.instance_exec(&@bounce_strategy)
-            else
-               instance.halt 403
-            end
+            instance.instance_exec(&@bounce_strategy)
          end
 
          def role(identifier, &block)
