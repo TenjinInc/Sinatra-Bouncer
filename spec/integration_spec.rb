@@ -214,6 +214,18 @@ describe 'Integration Tests' do
          expect(response).to be_forbidden
       end
 
+      it 'should complain when provided just a role with no route matcher' do
+         expect do
+            Class.new Sinatra::Base do
+               register Sinatra::Bouncer
+
+               rules do
+                  anyone
+               end
+            end
+         end.to raise_error Sinatra::Bouncer::BouncerError, 'rules block error: missing #can or #can_sometimes call'
+      end
+
       it 'should evaluate role definitions in the context of the request' do
          path = '/admin/dashboard'
 

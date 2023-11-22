@@ -65,6 +65,10 @@ module Sinatra
             end
          end
 
+         def incomplete?
+            @routes.empty?
+         end
+
          private
 
          def validate_http_method!(method)

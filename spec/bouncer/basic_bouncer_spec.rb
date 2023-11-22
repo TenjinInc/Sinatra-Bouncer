@@ -20,6 +20,32 @@ describe Sinatra::Bouncer::BasicBouncer do
       end
    end
 
+   describe '#rules' do
+      it 'should execute the rules block' do
+         expect(bouncer).to receive :something
+
+         bouncer.rules do
+            something
+         end
+      end
+
+      it 'should NOT complain if all rules are fully defined' do
+         expect do
+            bouncer.rules do
+               anyone.can get: '/something'
+            end
+         end.to_not raise_error
+      end
+
+      it 'should complain if any rule is not fully defined' do
+         expect do
+            bouncer.rules do
+               anyone
+            end
+         end.to raise_error Sinatra::Bouncer::BouncerError, 'rules block error: missing #can or #can_sometimes call'
+      end
+   end
+
    describe '#role' do
       it 'should register a role under the given identifier' do
          bouncer.role :admin do

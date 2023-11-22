@@ -49,8 +49,8 @@ module Sinatra
          settings.bouncer.role identifier, &block
       end
 
-      def rules(&block)
-         settings.bouncer.instance_exec(&block)
+      def rules(...)
+         settings.bouncer.rules(...)
       end
    end
 

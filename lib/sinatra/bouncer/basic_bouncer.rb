@@ -18,6 +18,13 @@ module Sinatra
             @rules_initializer = proc {}
          end
 
+         def rules(&block)
+            instance_exec(&block)
+            @rules.each do |rule|
+               raise BouncerError, 'rules block error: missing #can or #can_sometimes call' if rule.incomplete?
+            end
+         end
+
          def can?(method, path, context)
             @rules.any? do |rule|
                rule.allow? method, path, context

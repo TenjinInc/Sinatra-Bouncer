@@ -127,6 +127,24 @@ describe Sinatra::Bouncer::Rule do
       end
    end
 
+   describe '#incomplete?' do
+      let(:rule) do
+         Sinatra::Bouncer::Rule.new do
+            true
+         end
+      end
+
+      it 'should be true when no routes are defined' do
+         expect(rule.incomplete?).to be true
+      end
+
+      it 'should be false when routes are defined' do
+         rule.can get: '/something'
+
+         expect(rule.incomplete?).to be false
+      end
+   end
+
    describe '#allow?' do
       let(:rule) do
          Sinatra::Bouncer::Rule.new do
