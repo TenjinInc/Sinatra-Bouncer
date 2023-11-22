@@ -9,11 +9,11 @@ Bouncer's syntax looks like:
 
 ```ruby
 # You can define roles to collect permissions together
-role :admins do
+bouncer.role :admins do
    current_user&.admin?
 end
 
-rules do
+bouncer.rules do
    # Routes match based on one or more strings. 
    anyone.can get:  '/',
               post: ['/user/sign-in',
@@ -83,7 +83,7 @@ require 'sinatra/bouncer'
 class MyApp < Sinatra::Base
    register Sinatra::Bouncer
 
-   rules do
+   bouncer.rules do
       # ... can statements ...
    end
 
@@ -97,7 +97,7 @@ end
 require 'sinatra'
 require 'sinatra/bouncer'
 
-rules do
+bouncer.rules do
    # ... can statements ...
 end
 
@@ -117,15 +117,15 @@ the request. This means they have access to Sinatra helpers, the `request` objec
 require 'sinatra'
 require 'sinatra/bouncer'
 
-role :members do
+bouncer.role :members do
    !current_user.nil?
 end
 
-role :bots do
+bouncer.role :bots do
    !request.get_header('X-CUSTOM-BOT').nil?
 end
 
-rules do
+bouncer.rules do
    # example: always allow GET requests to '/' and '/about'; and POST requests to '/sign-in'
    anyone.can get:  ['/', '/about'],
               post: '/sign-in'
@@ -150,7 +150,7 @@ must return exactly `true` when the role applies.
 
 ```ruby
 # let's pretend that current_user is a helper that returns the user from Warden
-role :admins do
+bouncer.role :admins do
    current_user&.admin?
 end
 ```
@@ -208,7 +208,7 @@ admins.can get: :all
 Any route declared with `#can` will be accepted without further challenge.
 
 ```ruby
-rules do
+bouncer.rules do
    # Anyone can access this path over GET
    anyone.can get: '/login'
 end
@@ -220,11 +220,11 @@ end
 explicit boolean** (ie. `true` or `false`) to avoid any accidental truthy values creating unwanted access.
 
 ```ruby
-role :users do
+bouncer.role :users do
    !current_user.nil?
 end
 
-rules do
+bouncer.rules do
    users.can_sometimes post: '/user/save' do
       current_user.id == params[:id]
    end

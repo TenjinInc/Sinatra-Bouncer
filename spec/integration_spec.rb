@@ -13,7 +13,7 @@ describe 'Integration Tests' do
          Class.new Sinatra::Base do
             register Sinatra::Bouncer
 
-            rules do
+            bouncer.rules do
                # no rules
             end
 
@@ -44,7 +44,7 @@ describe 'Integration Tests' do
          server_klass = Class.new Sinatra::Base do
             register Sinatra::Bouncer
 
-            rules do
+            bouncer.rules do
                anyone.can get: path
             end
 
@@ -68,7 +68,7 @@ describe 'Integration Tests' do
          server_klass = Class.new Sinatra::Base do
             register Sinatra::Bouncer
 
-            rules do
+            bouncer.rules do
                anyone.can get: paths
             end
 
@@ -104,7 +104,7 @@ describe 'Integration Tests' do
                test_body
             end
 
-            rules do
+            bouncer.rules do
                anyone.can get:  path,
                           post: path
             end
@@ -135,7 +135,7 @@ describe 'Integration Tests' do
                'Boring is always best.'
             end
 
-            rules do
+            bouncer.rules do
                runs += 1
 
                anyone.can get: path
@@ -163,14 +163,14 @@ describe 'Integration Tests' do
                'Boring is always best.'
             end
 
-            role :user do
+            bouncer.role :user do
                # dummy user session handling for testing - do not do it this way in real life
                current_user = JSON.parse(request.get_header('X-FAKE-SESSION'))
 
                !current_user.nil?
             end
 
-            rules do
+            bouncer.rules do
                user.can get: path
             end
          end
@@ -192,11 +192,11 @@ describe 'Integration Tests' do
                # whatever
             end
 
-            role :user do
+            bouncer.role :user do
                request.get_header('X-CUSTOM-USER') == 'Bryce'
             end
 
-            rules do
+            bouncer.rules do
                user.can_sometimes get: path do
                   request.get_header('X-CUSTOM-COND') == 'special'
                end
@@ -219,7 +219,7 @@ describe 'Integration Tests' do
             Class.new Sinatra::Base do
                register Sinatra::Bouncer
 
-               rules do
+               bouncer.rules do
                   anyone
                end
             end
@@ -236,11 +236,11 @@ describe 'Integration Tests' do
                'Boring is always best.'
             end
 
-            role :user do
+            bouncer.role :user do
                !current_user.nil?
             end
 
-            rules do
+            bouncer.rules do
                user.can get: path
             end
 
@@ -275,7 +275,7 @@ describe 'Integration Tests' do
                'Boring is always best.'
             end
 
-            rules do
+            bouncer.rules do
                anyone.can_sometimes get: path do
                   request.get_header('X-CUSTOM') == 'special'
                end
@@ -302,7 +302,7 @@ describe 'Integration Tests' do
                has_run = true
             end
 
-            rules do
+            bouncer.rules do
                anyone.can_sometimes get: path do
                   !has_run
                end
@@ -330,7 +330,7 @@ describe 'Integration Tests' do
                'Boring is always best.'
             end
 
-            rules do
+            bouncer.rules do
                anyone.can get: path
             end
          end
@@ -352,7 +352,7 @@ describe 'Integration Tests' do
                # whatever
             end
 
-            rules do
+            bouncer.rules do
                anyone.can head: path
             end
          end
@@ -374,7 +374,7 @@ describe 'Integration Tests' do
                # whatever
             end
 
-            rules do
+            bouncer.rules do
                anyone.can_sometimes get: path do
                   5
                end
@@ -398,7 +398,7 @@ describe 'Integration Tests' do
                # whatever
             end
 
-            rules do
+            bouncer.rules do
                anyone.can_sometimes get: path do
                   nil
                end
@@ -423,7 +423,7 @@ describe 'Integration Tests' do
                   test_body
                end
 
-               rules do
+               bouncer.rules do
                   anyone.can get: '/blogs/*'
                end
             end
@@ -446,7 +446,7 @@ describe 'Integration Tests' do
                   test_body
                end
 
-               rules do
+               bouncer.rules do
                   anyone.can get: '/*/hello-world'
                end
             end
@@ -468,11 +468,11 @@ describe 'Integration Tests' do
          server_klass = Class.new Sinatra::Base do
             register Sinatra::Bouncer
 
-            rules do
+            bouncer.rules do
                # none
             end
 
-            bounce_with do
+            bouncer.bounce_with do
                halt 418 # teapots are not allowed
             end
 

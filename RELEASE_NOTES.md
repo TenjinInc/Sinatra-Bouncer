@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 * Changed rules DSL to be role-oriented
 * Removed the `:any` HTTP method wildcard
+* Changed Sinatra API to require calling methods on bouncer object
+    * eg. `rules do ... end` should now be `bouncer.rules do ... end`
 
 ### Minor Changes
 

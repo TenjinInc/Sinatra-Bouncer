@@ -40,18 +40,6 @@ module Sinatra
             settings.bouncer.bounce(self) unless settings.bouncer.can?(http_method, path, self)
          end
       end
-
-      def bounce_with(&block)
-         bouncer.bounce_with(&block)
-      end
-
-      def role(identifier, &block)
-         settings.bouncer.role identifier, &block
-      end
-
-      def rules(...)
-         settings.bouncer.rules(...)
-      end
    end
 
    register Sinatra::Bouncer
