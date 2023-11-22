@@ -9,6 +9,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ### Major Changes
 
+* none
+
+### Minor Changes
+
+* none
+
+### Bugfixes
+
+* none
+
+## [3.0.0] - 2023-11-21
+
+### Major Changes
+
 * Changed rules DSL to be role-oriented
 * Removed the `:any` HTTP method wildcard
 * Changed Sinatra API to require calling methods on bouncer object
